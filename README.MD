@@ -1,0 +1,1 @@
+1: Creamos dos archivos CSS: uno para index.html y otro para productos.html. También se buscó una API para el catálogo de ropa y se crearon los respectivos archivos JS: api.js y productos.js
