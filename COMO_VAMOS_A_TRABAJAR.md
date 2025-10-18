@@ -12,8 +12,8 @@ Utilizaremos un flujo de trabajo basado en ramas personales y una rama central d
 main        → rama estable (versión final y probada)
 dev         → rama de desarrollo (integración de todas las ramas)
 lautaro-ui  → rama personal de Lautaro (interfaz / frontend)
-juan-api    → rama personal de Juan (backend / API)
-mati-auth   → rama personal de Mati (autenticación / login)
+agustin-api    → rama personal de Agustin (backend / API)
+ignacio-auth   → rama personal de Ignacio (autenticación / login)
 ```
 
 ---
