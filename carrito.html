@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TP1 - Carrito</title>
+  <link rel="stylesheet" href="css/carrito.css">
+</head>
+<body>
+  <header>
+    <img src="img/logo.png" alt="Logo" class="logo">
+    <h1>TP1 - Tu Carrito</h1>
+    <nav>
+      <button onclick="location.href='productos.html'">Volver</button>
+      <button onclick="location.href='ticket.html'">Finalizar Compra</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Productos en tu carrito</h2>
+    <div id="carrito-container" class="carrito-container">
+      <p>Tu carrito está vacío</p>
+    </div>
+
+    <div class="total-section">
+      <h3>Total: $<span id="total">0.00</span></h3>
+      <button id="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
+    </div>
+  </main>
+
+  <script src="js/carrito.js"></script>
+</body>
+</html>

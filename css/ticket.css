@@ -1,0 +1,54 @@
+body {
+  background: linear-gradient(135deg, #0f0f0f, #1b1b1b);
+  color: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.ticket {
+  background: #1a1a1a;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+ul {
+  text-align: left;
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 8px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1f6feb, #0056d6);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
