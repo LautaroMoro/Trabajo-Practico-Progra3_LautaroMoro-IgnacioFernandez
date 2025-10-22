@@ -16,7 +16,7 @@ header {
 }
 
 .logo {
-  height: 50px;
+  height: 100px;
 }
 
 header h1 {
@@ -105,3 +105,71 @@ footer {
   color: #999;
   border-top: 2px solid #333;
 }
+
+/* Estilo para el logo */
+h1 {
+    width: auto;          /* tamaño aproximado de un h1 */
+    height: auto;         /* mantiene la proporción */
+    display: block;
+    margin: 20px auto;    /* lo centra verticalmente con margen */
+}
+
+/* Si querés alinearlo al centro en la parte superior */
+header .h1 {
+    display: block;
+    margin: 10px auto;
+}
+button {
+  background-color: transparent;
+  border: none; 
+  color: inherit; 
+  cursor: pointer; 
+}
+/* Ubica el menú arriba a la izquierda */
+.menu {
+  top: 250px;
+  position: fixed;
+  display: inline-block;
+  z-index: 1000;
+}
+
+/* Estilo del botón */
+.menu-button {
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Contenedor del menú desplegable */
+.dropdown {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+}
+
+/* Estilo de los enlaces del menú */
+.dropdown a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Hover sobre los enlaces */
+.dropdown a:hover {
+  background-color: #ddd;
+}
+
+/* Mostrar el menú al pasar el mouse */
+.menu:hover .dropdown {
+  display: block;
+}
+
+
+
+

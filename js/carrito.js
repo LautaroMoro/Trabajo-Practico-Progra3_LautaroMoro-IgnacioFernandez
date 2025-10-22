@@ -56,3 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   actualizarCarrito();
 });
+//vuelve a la pagina de inicio cuando se toca el nombre
+  document.getElementById("logoBtn").addEventListener("click", function () {
+    window.location.href = "productos.html";
+  });

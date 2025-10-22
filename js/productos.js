@@ -57,3 +57,7 @@ function agregarAlCarrito(producto) {
   localStorage.setItem("carrito", JSON.stringify(carrito));
   alert(`✅ ${producto.title} agregado al carrito.`);
 }
+//vuelve a la pagina de inicio cuando se toca el nombre
+  document.getElementById("logoBtn").addEventListener("click", function () {
+    window.location.href = "productos.html";
+  });
