@@ -4,7 +4,11 @@ const API_URL = "https://dummyjson.com/products";
 Función 1.0 para obtener los productos de la API(Obtenia solamente una categoria con el siguiente codigo):
 async function obtenerProductos() {
   try {
+<<<<<<< HEAD
     const response = await fetch(`${API_URL}`); //limite de productos a mostrar
+=======
+    const response = await fetch(`${API_URL}?limit=2000`); //limite de productos a mostrar
+>>>>>>> origin/Agus-dev
     if (!response.ok) throw new Error("Error al obtener productos");
 
     const data = await response.json();

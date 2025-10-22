@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>TP1 - Productos</title>
-    <link rel="stylesheet" href="css/productos.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Productos - TP1</title>
+  <link rel="stylesheet" href="css/productos.css">
+  <script src="js/api.js" defer></script>
+  <script src="js/productos.js" defer></script>
 </head>
+
 <body>
-    <header>
-        <img src="img/logo.png" alt="Logo" class="logo"> <!-- Pongan un logo bonito -->
-        <h1>TP1 - Catálogo de Ropa</h1>
-        <nav>
-            <button onclick="location.href='index.html'">Inicio</button>
-            <button onclick="location.href='carrito.html'">Carrito</button>
-        </nav>
-    </header>
+  <header>
+    <img src="img/logo.png" alt="Logo" class="logo">
+    <h1>Catálogo de Productos</h1>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="carrito.html">Carrito 🛒</a>
+    </nav>
+  </header>
 
-    <main>
-        <h2>Nuestros Productos</h2>
-        <div id="productos-container" class="productos-container">
-            <!-- aca se cargarán los productos dinámicamente -->
-        </div>
-    </main>
+  <main>
+    <section id="productos-container" class="productos-grid">
+      <p>Cargando productos...</p>
+    </section>
+  </main>
 
-    <script src="js/api.js"></script>
-    <script src="js/productos.js"></script>
+  <footer>
+    <p>Trabajo Práctico 1 - Programación</p>
+  </footer>
 </body>
 </html>
