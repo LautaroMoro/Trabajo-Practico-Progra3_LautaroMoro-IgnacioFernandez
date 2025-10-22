@@ -23,7 +23,7 @@ header {
 }
 
 .logo {
-  width: 60px;
+  width: 200px;
   border-radius: 10px;
 }
 
@@ -84,10 +84,6 @@ main {
   gap: 10px;
 }
 
-button {
-  cursor: pointer;
-  transition: 0.3s;
-}
 
 .btn-eliminar {
   background: #ff4747;
@@ -114,4 +110,18 @@ button {
   margin-top: 30px;
   text-align: center;
   font-size: 1.3rem;
+}
+/* Estilo para el logo */
+h1 {
+    margin-left: -200px;         
+    display: block;
+        
+}
+
+/* Si querés alinearlo al centro en la parte superior */
+button {
+  background-color: transparent;
+  border: none; 
+  color: inherit; 
+  cursor: pointer; 
 }
