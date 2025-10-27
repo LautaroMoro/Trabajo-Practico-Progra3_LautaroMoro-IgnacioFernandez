@@ -20,8 +20,6 @@ async function obtenerProductos() {
 
 
 
-
-
 // Función asincrona renovada para obtener los productos de ropa de 3 categorias(remeas de hombres, vestidos de mujeres y zapatillas de hombres)
 async function obtenerProductos() {
   try{
