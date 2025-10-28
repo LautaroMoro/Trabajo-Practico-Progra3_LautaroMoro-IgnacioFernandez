@@ -14,20 +14,43 @@ document.addEventListener("DOMContentLoaded", async () => {
   contenedor.innerHTML = "";
 
   // Recorremos los productos y creamos las tarjetas
-  productos.forEach(prod => {
-    const card = document.createElement("div");
-    card.classList.add("producto-card");
+  function renderizarProductos(productos){
+    productos.forEach(prod => {
+      const card = document.createElement("div");
+      card.classList.add("producto-card");
 
-    card.innerHTML = `
-      <img src="${prod.thumbnail}" alt="${prod.title}">
-      <h3>${prod.title}</h3>
-      <p class="categoria">Categoría: ${prod.category}</p>
-      <p class="precio">$${prod.price.toFixed(2)}</p>
-      <button class="btn-agregar" data-id="${prod.id}">Agregar al carrito</button>
-    `;
+      card.innerHTML = `
+        <img src="${prod.thumbnail}" alt="${prod.title}">
+        <h3>${prod.title}</h3>
+        <p class="categoria">Categoría: ${prod.category}</p>
+        <p class="precio">$${prod.price.toFixed(2)}</p>
+        <button class="btn-agregar" data-id="${prod.id}">Agregar al carrito</button>
+      `;
 
-    contenedor.appendChild(card);
-  });
+      contenedor.appendChild(card);
+    });
+  }
+
+
+  function filtrarPorCategoria() {
+    const filtro = document.querySelector(".dropdown");
+
+    filtro.addEventListener("change", () => {
+      let categoriaElegida =  filtro.value;
+      if(categoriaElegida === "products"){
+        contenedor.innerHTML = "";
+        renderizarProductos(productos);
+        return productos; 
+      }
+      let filtrados = productos.filter(prod => prod.category === categoriaElegida);
+      contenedor.innerHTML = "";
+      renderizarProductos(filtrados);
+      return filtrados; 
+      
+    });
+  }
+
+
 
   // Evento para manejar el clic en los botones de agregar al carrito
   contenedor.addEventListener("click", e => {
@@ -37,6 +60,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       agregarAlCarrito(producto);
     }
   });
+  renderizarProductos(productos);
+  filtrarPorCategoria();
 });
 
 // -------------------------------
@@ -57,3 +82,7 @@ function agregarAlCarrito(producto) {
   localStorage.setItem("carrito", JSON.stringify(carrito));
   alert(`✅ ${producto.title} agregado al carrito.`);
 }
+//vuelve a la pagina de inicio cuando se toca el nombre
+  document.getElementById("logoBtn").addEventListener("click", function () {
+    window.location.href = "index.html";
+  });

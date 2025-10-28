@@ -7,12 +7,12 @@
 </head>
 <body>
   <header>
-    <img src="img/logo.png" alt="Logo" class="logo">
-    <h1>TP1 - Tu Carrito</h1>
+    <img src=logo.png alt="Logo" class="logo">
+    <h1><button id="logoBtn"><img src=nombre.png></button></h1>
     <nav>
-      <button onclick="location.href='productos.html'">Volver</button>
-      <button onclick="location.href='ticket.html'">Finalizar Compra</button>
+  <button id="finalizarCompra">Finalizar Compra</button>
     </nav>
+
   </header>
 
   <main>
@@ -26,6 +26,19 @@
       <button id="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
     </div>
   </main>
+
+    <!-- Ventana flotante para ingresar la nota -->
+  <div id="modal-pago" class="modal oculto">
+    <div class="modal-contenido">
+      <h2>Ingrese su nota</h2>
+      <p>Para simular el pago con tarjeta, ingrese una nota del 1 al 10:</p>
+      <input type="number" id="inputNota" min="1" max="10" placeholder="Ej: 8">
+      <div class="modal-botones">
+        <button id="btnCancelar">Cancelar</button>
+        <button id="btnConfirmar">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/carrito.js"></script>
 </body>

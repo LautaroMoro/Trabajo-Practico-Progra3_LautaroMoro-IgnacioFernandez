@@ -2,6 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("carrito-container");
   const totalSpan = document.getElementById("total");
   const btnVaciar = document.getElementById("vaciarCarrito");
+  const modal = document.getElementById("modal-pago");
+  const inputNota = document.getElementById("inputNota");
+  const btnCancelar = document.getElementById("btnCancelar");
+  const btnConfirmar = document.getElementById("btnConfirmar");
+  const finalizarBtn = document.querySelector('nav button');
 
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -55,4 +60,47 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   actualizarCarrito();
+
+  // volver a productos
+  document.getElementById("logoBtn").addEventListener("click", function () {
+    window.location.href = "productos.html";
+  });
+
+  // abrir el modal de pago
+  finalizarBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (carrito.length === 0) {
+      alert("Tu carrito está vacío. Agregá productos antes de finalizar la compra.");
+      return;
+    }
+
+    modal.classList.remove("oculto");
+    inputNota.value = "";
+    inputNota.focus();
+  });
+
+  // cancelar compra
+  btnCancelar.addEventListener("click", () => {
+    modal.classList.add("oculto");
+  });
+
+  // confirmar pago
+  btnConfirmar.addEventListener("click", () => {
+    const valor = parseInt(inputNota.value);
+
+    if (isNaN(valor) || valor < 1 || valor > 10) {
+      alert("Por favor, ingrese un número válido entre 1 y 10.");
+      return;
+    }
+
+    if (valor >= 6) {
+      alert("✅ Compra aprobada. ¡Gracias por su compra!");
+      modal.classList.add("oculto");
+      window.location.href = "ticket.html";
+    } else {
+      alert("❌ Fondos insuficientes. No se pudo realizar la compra.");
+      modal.classList.add("oculto");
+    }
+  });
 });
