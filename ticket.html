@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TP1 - Ticket</title>
+  <link rel="stylesheet" href="css/ticket.css">
+</head>
+<body>
+  <div class="ticket">
+    <h1>Comprobante de Compra</h1>
+    <p><strong>Cliente:</strong> <span id="nombre"></span></p>
+    <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+
+    <h2>Productos</h2>
+    <ul id="lista-productos"></ul>
+
+    <h3>Total: $<span id="total"></span></h3>
+
+    <div class="acciones">
+      <button id="descargar">Descargar Ticket</button>
+      <button onclick="location.href='productos.html'">Volver al Inicio</button>
+    </div>
+  </div>
+
+  <script src="js/ticket.js"></script>
+</body>
+</html>
