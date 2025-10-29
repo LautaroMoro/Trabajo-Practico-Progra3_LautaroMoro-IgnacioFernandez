@@ -12,12 +12,12 @@
 <body>
   <header>
     <h1>
-      <button id="logoBtn"><img src=nombre.png></button>
+      <button id="logoBtn"><img src="nombre.png" alt="Nombre Aplicación"></button>
     </h1>
     <div class="menu">
       <button class="menu-button">Categorías</button>
-      <select class="dropdown">
-        <option value="products">Mostrar todos</option>
+      <select id="categoriaSelect" class="dropdown">
+        <option value="all">Mostrar todos</option>
         <option value="mens-shirts">Remeras</option>
         <option value="womens-dresses">Vestidos</option>
         <option value="mens-shoes">Zapatillas</option>
@@ -26,6 +26,8 @@
 
     <nav>
       <a href="carrito.html">Carrito 🛒</a>
+      <button id="adminLoginBtn">Login Admin</button>
+      <button id="toggleThemeBtn">Cambiar tema</button>
     </nav>
   </header>
 
@@ -33,6 +35,13 @@
     <section id="productos-container" class="productos-grid">
       <p>Cargando productos...</p>
     </section>
+
+    <!-- Paginación -->
+    <div id="pagination" style="text-align:center; margin: 20px;">
+      <button id="prevPage">Anterior</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage">Siguiente</button>
+    </div>
   </main>
 
   <footer>
