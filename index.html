@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>TP1 - Bienvenida</title>
     <link rel="stylesheet" href="css/bienvenida.css">
+    <link rel="icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <!-- Animación de bienvenida -->
@@ -11,10 +13,10 @@
         Bienvenido a TP1
     </div>
 
-    <!-- Contenedor principal que aparce después -->
+    <!-- Contenedor principal que aparece después -->
     <div class="main-content" id="mainContent">
         <img src="logo.png" alt="Logo" class="logo">
-        <h1>TP1 - Vendemos Ropa</h1>
+        <h1><img src="nombre.png" alt="Nombre Aplicación"></h1>
 
         <!-- Formulario para ingresar nombre -->
         <div class="name-section">
@@ -22,13 +24,10 @@
             <button id="continueBtn">Continuar</button>
         </div>
 
-        <!-- Quiénes somos -->
-        <div class="about-section">
-            <button id="aboutBtn">Quiénes somos</button>
-            <p id="aboutText">
-                Somos un grupo de Programacion 3 conformado por Agustin González, Ignacio Fernandez y Lautaro Moro que presentan el Trabajo Práctico 1 de progra3, en el cual se apreciará una página de venta de ropa.
-            </p>
-        </div>
+        <!-- Barra de navegación mínima -->
+        <nav class="nav-footer">
+            <button id="adminLoginBtn">Login Administrador</button>
+        </nav>
     </div>
 
     <script>
@@ -37,7 +36,6 @@
             const welcome = document.getElementById('welcome');
             const mainContent = document.getElementById('mainContent');
             
-            // Mostrar 2 segundos y desaparecer (la animacion, no sean bobis)
             setTimeout(() => {
                 welcome.style.opacity = 0;
                 welcome.style.transform = 'scale(1.2)';
@@ -48,27 +46,22 @@
             }, 2000);
         });
 
-        // Toggle de "Quiénes somos"
-        const aboutBtn = document.getElementById('aboutBtn');
-        const aboutText = document.getElementById('aboutText');
-        aboutText.style.display = 'none';
-        aboutBtn.addEventListener('click', () => {
-            aboutText.style.display = 'block';
-            aboutText.classList.add('fade-in');
-        });
-
-        // Redirección al hacer clic en "Continuar"
+         // Redirección al hacer clic en "Continuar"
         const continueBtn = document.getElementById('continueBtn');
         continueBtn.addEventListener('click', () => {
             const username = document.getElementById('username').value.trim();
             if (username === "") {
                 alert("Por favor, ingresá tu nombre antes de continuar");
             } else {
-                // Guardamos el nombre en localStorage (opcional)
-                localStorage.setItem("username", username);
                 // Redirige a la página de productos
                 window.location.href = "productos.html";
             }
+        });
+
+        // Botón de login administrador
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        adminLoginBtn.addEventListener('click', () => {
+            window.location.href = "admin/login.html";
         });
     </script>
 </body>
