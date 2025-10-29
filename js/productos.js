@@ -31,22 +31,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-
+  // Función para filtrar productos por categoría usando el dropdown
   function filtrarPorCategoria() {
     const filtro = document.querySelector(".dropdown");
-
+    // Evento para manejar el cambio en el dropdown
+    
+  /**
+ * Escucha el cambio en el menú desplegable y filtra la lista de productos.
+ * Si se selecciona "products", muestra todos. Si no, muestra solo los que
+ * coinciden con la categoría elegida. Re-renderiza el contenedor cada vez.
+ */
     filtro.addEventListener("change", () => {
       let categoriaElegida =  filtro.value;
       if(categoriaElegida === "products"){
         contenedor.innerHTML = "";
         renderizarProductos(productos);
         return productos; 
+        // Devuelve todos los productos si se selecciona "Todos"
       }
+      // Filtra los productos según la categoría seleccionada
       let filtrados = productos.filter(prod => prod.category === categoriaElegida);
       contenedor.innerHTML = "";
       renderizarProductos(filtrados);
       return filtrados; 
-      
+      // Devuelve los productos filtrados por categoría
     });
   }
 
