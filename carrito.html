@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <title>TP1 - Carrito</title>
   <link rel="stylesheet" href="css/carrito.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <header>
-    <img src=logo.png alt="Logo" class="logo">
-    <h1><button id="logoBtn"><img src=nombre.png></button></h1>
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1><button id="logoBtn"><img src="nombre.png"></button></h1>
     <nav>
-      <button onclick="location.href='ticket.html'">Finalizar Compra</button>
+      <button id="finalizarCompra">Finalizar Compra</button>
+      <button id="temaBtn">🌙</button>
     </nav>
   </header>
 
@@ -25,6 +27,19 @@
       <button id="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
     </div>
   </main>
+
+  <!-- Ventana flotante (modal) para simular el pago -->
+  <div id="modal-pago" class="modal oculto">
+    <div class="modal-contenido">
+      <h2>Ingrese nuestra nota</h2>
+      <p>Para realizar el pago, ingrese la nota del 1 al 10:</p>
+      <input type="number" id="inputNota" min="1" max="10" placeholder="Ej: 8">
+      <div class="modal-botones">
+        <button id="btnCancelar">Cancelar</button>
+        <button id="btnConfirmar">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/carrito.js"></script>
 </body>

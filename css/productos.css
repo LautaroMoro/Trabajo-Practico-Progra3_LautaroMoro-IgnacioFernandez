@@ -319,4 +319,23 @@ button {
   }
 }
 
+body.oscuro {
+  background-color: #121212;
+  color: #f5f5f5;
+}
 
+body.oscuro header {
+  background-color: #1e1e1e;
+}
+
+body.oscuro .btn-vaciar,
+body.oscuro button {
+  background-color: #333;
+  color: #f5f5f5;
+  border: 1px solid #555;
+}
+
+body.oscuro .modal-contenido {
+  background-color: #222;
+  color: #fff;
+}

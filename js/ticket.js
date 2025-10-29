@@ -20,17 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Descargar ticket como texto txt
   document.getElementById("descargar").addEventListener("click", () => {
-    let contenido = `=== Comprobante de Compra ===\n`;
-    contenido += `Cliente: ${nombre}\nFecha: ${new Date().toLocaleString()}\n\nProductos:\n`;
-    carrito.forEach(p => {
-      contenido += `- ${p.title} x${p.cantidad} - $${(p.price * p.cantidad).toFixed(2)}\n`;
-    });
-    contenido += `\nTotal: $${total.toFixed(2)}\nGracias por su compra!\n`;
-
-    const blob = new Blob([contenido], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ticket.txt";
-    link.click();
-  });
+  const ticket = document.querySelector(".ticket");
+  const opciones = {
+    margin: 10,
+    filename: "ticket.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  };
+  html2pdf().set(opciones).from(ticket).save();
+});
 });
