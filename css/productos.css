@@ -1,321 +1,143 @@
-/* ==== ESTILOS GENERALES ==== */
-body {
+/* Reset básico */
+* {
   margin: 0;
-  font-family: "Poppins", sans-serif;
-  background-color: #121212;
-  color: #fff;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
+body {
+  background: linear-gradient(135deg, #0f0f0f, #1b1b1b);
+  color: #f0f0f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
 header {
-  position:relative;
+  background: #1e1e1e;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #1f1f1f;
-  border-bottom: 2px solid #333;
-}
-
-.logo {
-  height: 100px;
+  padding: 15px 40px;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 header h1 {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  color: #ffffff;
 }
 
-nav a {
+.logo {
+  width: 60px;
+  border-radius: 10px;
+}
+
+nav button {
+  background: linear-gradient(90deg, #1f6feb, #0056d6);
+  border: none;
   color: #fff;
-  text-decoration: none;
-  margin-left: 1rem;
-  font-weight: bold;
-  transition: color 0.3s;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-left: 10px;
 }
 
-nav a:hover {
-  color: #00bcd4;
+nav button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(90deg, #155ecf, #0041a3);
 }
 
-/* ==== GRID DE PRODUCTOS ==== */
-.productos-grid {
+/* Main */
+main {
+  flex: 1;
+  padding: 40px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #e0e0e0;
+}
+
+/* Contenedor de productos */
+.productos-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: 25px;
+  justify-items: center;
 }
 
-/* ==== TARJETA DE PRODUCTO ==== */
+/* Tarjetas de producto */
 .producto-card {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  padding-bottom: 1rem;
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 15px;
+  width: 230px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
 }
 
 .producto-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(31, 111, 235, 0.3);
 }
 
 .producto-card img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #2a2a2a;
 }
 
 .producto-card h3 {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  margin: 10px 0;
 }
 
 .categoria {
-  color: #bbb;
   font-size: 0.9rem;
+  color: #aaa;
 }
 
 .precio {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #00bcd4;
+  margin: 8px 0;
 }
 
-/* ==== BOTÓN ==== */
 .btn-agregar {
-  background-color: #00bcd4;
+  background: linear-gradient(90deg, #1f6feb, #0056d6);
   border: none;
   color: white;
-  padding: 0.6rem 1rem;
+  padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
-  font-weight: bold;
+  transition: 0.3s;
 }
 
 .btn-agregar:hover {
-  background-color: #0097a7;
+  background: linear-gradient(90deg, #155ecf, #0041a3);
+  transform: translateY(-2px);
 }
 
-/* ==== FOOTER ==== */
-footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: #1f1f1f;
-  color: #999;
-  border-top: 2px solid #333;
-}
-footer a{
-  padding: 0.5rem;
-  color: #bbb8;
-  text-decoration: none;
-  
-}
-
-footer a img{
-  border-radius: 35%;
-
-}
-
-footer a:hover{
-  text-decoration: underline;
-  color: #ddd;
-}
-
-
-
-/* Estilo para el logo */
-h1 {
-    width: auto;          /* tamaño aproximado de un h1 */
-    height: auto;         /* mantiene la proporción */
-    display: block;
-    margin: 20px auto;    /* lo centra verticalmente con margen */
-}
-
-/* Si querés alinearlo al centro en la parte superior */
-header .h1 {
-    display: block;
-    margin: 10px auto;
-}
-button {
-  background-color: transparent;
-  border: none; 
-  color: inherit; 
-  cursor: pointer; 
-}
-/* Ubica el menú arriba a la izquierda */
-.menu {
-  right: 1400px;
-  position: relative;
-  display: inline-block;
-  z-index: 1;
-}
-
-/* Estilo del botón */
-.menu-button {
-  color: white;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Contenedor del menú desplegable */
-.dropdown {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-}
-
-/* Estilo de los enlaces del menú */
-.dropdown a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-/* Hover sobre los enlaces */
-.dropdown a:hover {
-  background-color: #ddd;
-}
-
-/* Mostrar el menú al pasar el mouse */
-.menu:hover .dropdown {
-  display: block;
-}
-
-
-/* ============================= */
-/* MEDIA QUERIES PARA TABLETS    */
-/* ============================= */
-@media (max-width: 1024px) {
-
-  #logoBtn{
-    width: auto;
-    height: 0;
-  }
-
-  header {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  header h1 img {
-    width: 450px;
-    height: auto;
-  }
-
-
-  nav a {
-    margin-left: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .menu {
-    position: relative;
-    right: 0;
-  }
-  .menu:hover .dropdown {
-    display: inline-flex;
-  }
-
-  .productos-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* ============================= */
-/* MEDIA QUERIES PARA CELULARES GRANDES */
-/* ============================= */
-@media (max-width: 768px) {
-
-  #logoBtn{
-    width: auto;
-    height: 0;
-  }
-
+/* Responsive */
+@media (max-width: 600px) {
   header {
     flex-direction: column;
+    gap: 10px;
     text-align: center;
   }
 
-
-  .menu {
-    order: 2;
+  nav button {
+    margin: 5px;
   }
 
-  .menu:hover .dropdown {
-  display: inline-flex;
-  }
-
-
-  nav {
-    order: 3;
-  }
-
-  .productos-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .producto-card img {
-    height: 200px;
-    object-fit: cover;
+  .producto-card {
+    width: 90%;
   }
 }
-
-/* ============================= */
-/* MEDIA QUERIES PARA CELULARES CHICOS */
-/* ============================= */
-@media (max-width: 480px) {
-
-  #logoBtn{
-    width: auto;
-    height: 0;
-  }
-
-
-  nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  nav a {
-    margin-left: 0;
-  }
-
-  .dropdown {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 100px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-  }
-
-  .dropdown a {
-  color: black;
-  padding: 5px 5px;
-  text-decoration: none;
-  display: block;
-}
-
-  .productos-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .producto-card img {
-    height: 180px;
-    object-fit: scale-down;
-  }
-
-  header h1 img {
-    width: 200px;
-    height: auto;
-  }
-}
-
