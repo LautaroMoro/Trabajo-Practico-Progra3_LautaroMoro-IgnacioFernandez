@@ -29,5 +29,5 @@ document.addEventListener("DOMContentLoaded", () => {
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
   html2pdf().set(opciones).from(ticket).save();
-});
+  });
 });
