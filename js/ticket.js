@@ -24,17 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Descargar ticket como PDF limpio ===
   document.getElementById("descargar").addEventListener("click", () => {
-<<<<<<< HEAD
-  const ticket = document.querySelector(".ticket");
-  const opciones = {
-    margin: 10,
-    filename: "ticket.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-  };
-  html2pdf().set(opciones).from(ticket).save();
-=======
     const fechaActual = new Date().toLocaleString();
 
     // Crear una versión "limpia" del ticket con estilo fijo (blanco y negro)
@@ -80,6 +69,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Generar PDF desde el contenido limpio
     html2pdf().set(opciones).from(contenidoPDF).save();
->>>>>>> dev
   });
 });
