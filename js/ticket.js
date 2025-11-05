@@ -11,9 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let total = 0;
   carrito.forEach(prod => {
     const li = document.createElement("li");
-    li.textContent = `${prod.title} x${prod.cantidad} - $${(prod.price * prod.cantidad).toFixed(2)}`;
+    console.log(prod);
+    console.log("entrre");
     lista.appendChild(li);
     total += prod.price * prod.cantidad;
+  li.textContent = `${prod.title} x${prod.cantidad} - ${(prod.price * prod.cantidad).toFixed(2)}`;
   });
 
   totalEl.textContent = total.toFixed(2);
