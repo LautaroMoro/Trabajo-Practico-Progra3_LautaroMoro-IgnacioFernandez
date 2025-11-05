@@ -130,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmButtonText: "Ver Ticket",
       }).then(() => {
         modal.classList.add("oculto");
-        localStorage.removeItem("carrito");
         window.location.href = "ticket.html";
       });
     } else {

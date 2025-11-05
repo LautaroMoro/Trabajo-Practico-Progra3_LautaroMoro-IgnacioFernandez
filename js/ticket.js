@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // === Recuperar datos del cliente y carrito ===
   const nombre = localStorage.getItem("username") || "Cliente";
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
+  // Mostrar datos en pantalla
   document.getElementById("nombre").textContent = nombre;
   document.getElementById("fecha").textContent = new Date().toLocaleDateString();
 
@@ -20,8 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   totalEl.textContent = total.toFixed(2);
 
-  // Descargar ticket como texto txt
+  // === Descargar ticket como PDF limpio ===
   document.getElementById("descargar").addEventListener("click", () => {
+<<<<<<< HEAD
   const ticket = document.querySelector(".ticket");
   const opciones = {
     margin: 10,
@@ -31,5 +34,52 @@ document.addEventListener("DOMContentLoaded", () => {
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
   html2pdf().set(opciones).from(ticket).save();
+=======
+    const fechaActual = new Date().toLocaleString();
+
+    // Crear una versión "limpia" del ticket con estilo fijo (blanco y negro)
+    const contenidoPDF = `
+      <div style="
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: #ffffff;
+        color: #000000;
+      ">
+        <h2 style="margin-bottom: 10px;">🧾 Comprobante de Compra</h2>
+        <p><strong>Cliente:</strong> ${nombre}</p>
+        <p><strong>Fecha:</strong> ${fechaActual}</p>
+        <hr style="margin: 10px 0; border: 1px solid #000;">
+        <h3 style="margin-bottom: 5px;">Productos:</h3>
+        <ul style="
+          list-style: none;
+          padding: 0;
+          text-align: left;
+          display: inline-block;
+          color: #000000;
+        ">
+          ${carrito.map(p => `
+            <li>${p.title} x${p.cantidad} - $${(p.price * p.cantidad).toFixed(2)}</li>
+          `).join('')}
+        </ul>
+        <hr style="margin: 10px 0; border: 1px solid #000;">
+        <h3 style="margin-bottom: 10px;">Total: $${total.toFixed(2)}</h3>
+        <p style="margin-top: 15px;">¡Gracias por su compra!</p>
+      </div>
+    `;
+
+    // Configuración de html2pdf
+    const opciones = {
+      margin: 10,
+      filename: "ticket.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+
+    // Generar PDF desde el contenido limpio
+    html2pdf().set(opciones).from(contenidoPDF).save();
+>>>>>>> dev
   });
 });

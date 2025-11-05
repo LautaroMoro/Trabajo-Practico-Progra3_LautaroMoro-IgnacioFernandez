@@ -4,30 +4,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const prevBtn = document.getElementById("prevPage");
   const nextBtn = document.getElementById("nextPage");
   const pageInfo = document.getElementById("pageInfo");
-  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-  const adminLoginBtn = document.getElementById("adminLoginBtn");
-
-  // Tema persistente
-  const body = document.body;
-  const savedTheme = localStorage.getItem('theme');
-  if(savedTheme) body.classList.add(savedTheme);
-
-  toggleThemeBtn.addEventListener("click", () => {
-    if(body.classList.contains('dark-theme')){
-      body.classList.remove('dark-theme');
-      body.classList.add('light-theme');
-      localStorage.setItem('theme','light-theme');
-    } else {
-      body.classList.remove('light-theme');
-      body.classList.add('dark-theme');
-      localStorage.setItem('theme','dark-theme');
-    }
-  });
-
-  // Login admin
-  adminLoginBtn.addEventListener("click", () => {
-    window.location.href = "admin/login.html";
-  });
 
   // Variables
   let todosProductos = [];
@@ -35,15 +11,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   let currentPage = 1;
   const itemsPerPage = 6;
 
-  // Obtener productos de la API
-  todosProductos = await obtenerProductos();
+  // 1️⃣ Obtener productos de la API
+  try {
+    todosProductos = await obtenerProductos();
+    console.log("Productos obtenidos:", todosProductos);
 
-  if (todosProductos.length === 0) {
-    contenedor.innerHTML = "<p>No se pudieron cargar los productos</p>";
+    if (todosProductos.length === 0) {
+      contenedor.innerHTML = "<p>No se pudieron cargar los productos</p>";
+      return;
+    }
+  } catch (error) {
+    contenedor.innerHTML = "<p>Error al cargar los productos</p>";
+    console.error(error);
     return;
   }
 
-  // Función para mostrar productos según página y filtro
+  // 2️⃣ Función para mostrar productos en la página actual
   function mostrarProductos() {
     contenedor.innerHTML = "";
 
@@ -54,16 +37,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (pageItems.length === 0) {
       contenedor.innerHTML = "<p>No hay productos para mostrar</p>";
+      return;
     }
 
     pageItems.forEach(p => {
       const card = document.createElement("div");
       card.classList.add("producto-card");
       card.innerHTML = `
-        <img src="${p.thumbnail || p.imagen}" alt="${p.title || p.nombre}">
-        <h3>${p.title || p.nombre}</h3>
-        <p class="categoria">${p.category || p.categoria}</p>
-        <p class="precio">$${(p.price || p.precio).toFixed(2)}</p>
+        <img src="${p.thumbnail || p.images[0]}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p class="categoria">${p.category}</p>
+        <p class="precio">$${p.price.toFixed(2)}</p>
         <button class="btn-agregar" data-id="${p.id}">Agregar</button>
       `;
       contenedor.appendChild(card);
@@ -71,24 +55,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     pageInfo.innerText = `Página ${currentPage} de ${totalPages}`;
     prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+    nextBtn.disabled = currentPage === totalPages;
   }
 
-  // Función para filtrar productos por categoría
+  // 3️⃣ Función para filtrar productos por categoría
   function filtrarProductos() {
     const cat = categoriaSelect.value;
-    currentPage = 1; // reinicia página al cambiar categoría
+    currentPage = 1;
+
     if (cat === "all") {
-      productosFiltrados = todosProductos.filter(p => p.activo !== false);
+      productosFiltrados = [...todosProductos];
     } else {
-      productosFiltrados = todosProductos.filter(p => 
-        (p.categoria === cat || p.category === cat) && p.activo !== false
-      );
+      productosFiltrados = todosProductos.filter(p => p.category === cat);
     }
+
     mostrarProductos();
   }
 
-  // Eventos
+  // 4️⃣ Eventos
   categoriaSelect.addEventListener("change", filtrarProductos);
 
   prevBtn.addEventListener("click", () => {
@@ -108,22 +92,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   contenedor.addEventListener("click", e => {
     if (e.target.classList.contains("btn-agregar")) {
-      const id = e.target.dataset.id;
-      const producto = todosProductos.find(p => p.id == id);
+      const id = parseInt(e.target.dataset.id);
+      const producto = todosProductos.find(p => p.id === id);
       agregarAlCarrito(producto);
     }
   });
 
-  // Inicial
+  // 5️⃣ Inicializar con todos los productos
   filtrarProductos();
 
-  // Volver al inicio con logo
+  // 6️⃣ Volver al inicio al hacer click en el logo
   document.getElementById("logoBtn").addEventListener("click", () => {
     window.location.href = "index.html";
   });
 });
 
-// Función agregar al carrito
+// 7️⃣ Función para agregar productos al carrito
 function agregarAlCarrito(producto) {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
   const existente = carrito.find(p => p.id === producto.id);
@@ -135,5 +119,5 @@ function agregarAlCarrito(producto) {
   }
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  alert(`✅ ${producto.title || producto.nombre} agregado al carrito.`);
+  alert(`✅ ${producto.title} agregado al carrito.`);
 }
