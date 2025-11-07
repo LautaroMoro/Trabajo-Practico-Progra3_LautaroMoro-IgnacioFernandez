@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.static('public'));
 
 // Hacemos la solicitud con un Promise.all y axios para obtener los datos de las tres categorías
-app.get("/api/products", async (res) => {
+app.get("/api/products", async (req, res) => {
     try{
         // URLs de las categorías de la API dummyjson.com
         const URLS = [
