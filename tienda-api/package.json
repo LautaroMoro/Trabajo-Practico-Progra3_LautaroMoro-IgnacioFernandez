@@ -1,26 +1,27 @@
+
 {
-  "name": "tienda-api",
+  "name": "productos-tickets-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:studio": "prisma studio"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^6.19.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-validator": "^7.3.0",
-    "morgan": "^1.10.1",
-    "prisma": "^6.19.0"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.2.0",
+    "morgan": "^1.10.0",
+    "prisma": "^5.19.1",
+    "@prisma/client": "^5.19.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.0"
   }
 }
  

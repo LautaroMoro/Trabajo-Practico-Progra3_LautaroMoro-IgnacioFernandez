@@ -20,8 +20,16 @@
   "homepage": "https://github.com/LautaroMoro/Trabajo-Practico-Progra3_LautaroMoro-IgnacioFernandez#readme",
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "axios": "^1.13.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.0",
+    "morgan": "^1.10.1",
+    "prisma": "^6.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
