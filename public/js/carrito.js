@@ -11,17 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  // === Cambio de tema (oscuro / claro) con persistencia ===
-  const temaGuardado = localStorage.getItem("tema") || "claro";
-  document.body.classList.toggle("oscuro", temaGuardado === "oscuro");
-  temaBtn.textContent = temaGuardado === "oscuro" ? "☀️" : "🌙";
-
-  temaBtn.addEventListener("click", () => {
-    const oscuro = document.body.classList.toggle("oscuro");
-    localStorage.setItem("tema", oscuro ? "oscuro" : "claro");
-    temaBtn.textContent = oscuro ? "☀️" : "🌙";
-  });
-
   // === Actualizar carrito ===
   function actualizarCarrito() {
     contenedor.innerHTML = "";
@@ -64,27 +53,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Eliminar producto ===
   window.eliminarProducto = (index) => {
-    carrito.splice(index, 1);
-    actualizarCarrito();
-  };
+  carrito.splice(index, 1);
+
+  if (carrito.length === 0) {
+    localStorage.removeItem("carrito");
+  } else {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+  }
+
+  if (carrito.length === 0) {
+  localStorage.removeItem("carrito");
+  return;
+}
+
+  actualizarCarrito();
+};
 
   // === Vaciar carrito ===
   btnVaciar.addEventListener("click", () => {
-    Swal.fire({
-      title: "¿Vaciar carrito?",
-      text: "Se eliminarán todos los productos.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, vaciar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        carrito = [];
-        actualizarCarrito();
-        Swal.fire("Listo", "El carrito fue vaciado.", "success");
-      }
-    });
+  Swal.fire({
+    title: "¿Vaciar carrito?",
+    text: "Se eliminarán todos los productos.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, vaciar",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      carrito = [];
+      localStorage.removeItem("carrito"); 
+      actualizarCarrito();
+
+      Swal.fire("Listo", "El carrito fue vaciado.", "success");
+    }
   });
+});
 
   // === Inicializar ===
   actualizarCarrito();
