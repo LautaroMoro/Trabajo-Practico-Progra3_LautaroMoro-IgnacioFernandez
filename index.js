@@ -1,5 +1,6 @@
 
 // src/index.js
+// ver que partes sirven(como modelo a seguir para completar server.js) y cuales no
 
 import "dotenv/config";
 import express from "express";
