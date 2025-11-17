@@ -1,41 +1,32 @@
 {
-  "name": "trabajo-practico-progra3_lautaromoro-ignaciofernandez",
+  "name": "productos-tickets-api",
   "version": "1.0.0",
-  "description": "1: Creamos dos archivos CSS: uno para index.html y otro para productos.html. También se buscó una API para el catálogo de ropa y se crearon los respectivos archivos JS: api.js y productos.js\r 2: Se eligio el tipo de ropa para la pagina y se cambiaron ciertos estilos de los .html\r 3: Se crearon dos archivos HTML: carrito.html y ticket.html, a su vez se le hicieron sus respectivos archivos JS para estos ultimos: carrito.js y ticket.js\r 4: Se le dió nombre y se creó un logo a la página\r 5: Se cambió el estilo y se crearon un mini menu en productos.html con las diferentes categorias de ropa a elegir(sin funcionalidad hasta el momento).",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LautaroMoro/Trabajo-Practico-Progra3_LautaroMoro-IgnacioFernandez.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/LautaroMoro/Trabajo-Practico-Progra3_LautaroMoro-IgnacioFernandez/issues"
-  },
-  "homepage": "https://github.com/LautaroMoro/Trabajo-Practico-Progra3_LautaroMoro-IgnacioFernandez#readme",
   "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:studio": "prisma studio"
+  },
   "dependencies": {
-    "axios": "^1.13.2",
-    "bcrypt": "^6.0.0",
+    "@prisma/client": "^5.19.1",
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "express-ejs-layouts": "^2.5.1",
+    "express": "^4.19.2",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.0",
-    "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
-    "multer": "^2.0.2",
-    "mysql2": "^3.15.3",
-    "nodemon": "^3.1.10",
-    "sequelize": "^6.37.7",
-    "typescript": "^5.9.3"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.19.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

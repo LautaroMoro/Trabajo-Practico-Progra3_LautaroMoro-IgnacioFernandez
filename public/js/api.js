@@ -1,12 +1,11 @@
 const API_URL = "/api/products";
 
-// Función para obtener productos de tres categorías
 async function obtenerProductos() {
   try {
     const res = await fetch(API_URL);
-    const productos = await res.json();
-    return productos;
+    const data = await res.json();
 
+    return data.products || [];  // 👈 SOLO devuelve array
   } catch (error) {
     console.error("Error al conectar con backend:", error);
     return [];

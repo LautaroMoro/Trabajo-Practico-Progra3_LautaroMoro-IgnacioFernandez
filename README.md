@@ -4,3 +4,25 @@
 4: Se le dió nombre y se creó un logo a la página
 5: Se cambió el estilo y se crearon un mini menu en productos.html con las diferentes categorias de ropa a elegir(sin funcionalidad hasta el momento).
 
+
+public/
+view(dynamic content/plantillas.ejs)/
+    navbar + footer + sidebars => layouts/
+    admin/
+    (opcional)
+
+routes
+    api(rutas api)/
+    admin(rutas.ejs)/
+    web(contenido estatico)
+
+controllers
+    api(rutas api)/
+    admin(rutas.ejs)/
+    web(contenido estatico)
+    
+prisma(modelos & conexion_db)
+middlewares(error.js)
+scripts/
+
+

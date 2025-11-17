@@ -1,3 +1,14 @@
+async function obtenerProductos() {
+  try {
+    const resp = await fetch("/api/products?limit=200");
+    const data = await resp.json();
+    return data.products || [];
+  } catch (err) {
+    console.error("Error obteniendo productos", err);
+    return [];
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("productos-container");
   const categoriaSelect = document.getElementById("categoriaSelect");
@@ -5,20 +16,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const nextBtn = document.getElementById("nextPage");
   const pageInfo = document.getElementById("pageInfo");
 
+  // Variables
   let todosProductos = [];
   let productosFiltrados = [];
   let currentPage = 1;
   const itemsPerPage = 6;
 
-  // 1️⃣ Obtener productos (API + locales de admin)
+  // 1️⃣ Obtener productos de la API
   try {
-    const [productosApi, productosLocales] = await Promise.all([
-      obtenerProductos(), 
-      fetch("/admin/products").then(res => res.json()).catch(() => [])
-    ]);
-
-    todosProductos = [...productosApi, ...productosLocales];
-    console.log("Productos combinados:", todosProductos);
+    todosProductos = await obtenerProductos();
+    console.log("Productos obtenidos:", todosProductos);
 
     if (todosProductos.length === 0) {
       contenedor.innerHTML = "<p>No se pudieron cargar los productos</p>";
@@ -26,10 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (error) {
     contenedor.innerHTML = "<p>Error al cargar los productos</p>";
+    console.error(error);
     return;
   }
 
-  // 2️⃣ Mostrar productos según página
+  // 2️⃣ Función para mostrar productos en la página actual
   function mostrarProductos() {
     contenedor.innerHTML = "";
 
@@ -44,24 +52,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     pageItems.forEach(p => {
-      const nombre = p.title || p.nombre || "Sin nombre";
-      const categoria = p.category || p.tipo || "Sin categoría";
-      const precio = p.price || p.precio || 0;
-
-      const imagen =
-        p.thumbnail ||
-        (p.images && p.images[0]) ||
-        p.imagenPath ||
-        "images/placeholder.png";
-
       const card = document.createElement("div");
       card.classList.add("producto-card");
 
+      // 🔥 Imagen segura
+      const imagen =
+        p.thumbnail ||
+        (p.images && p.images.length > 0 ? p.images[0] : null) ||
+        "/img/default.png";
+
       card.innerHTML = `
-        <img src="${imagen}" alt="${nombre}">
-        <h3>${nombre}</h3>
-        <p class="categoria">${categoria}</p>
-        <p class="precio">$${precio.toFixed(2)}</p>
+        <img src="${imagen}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p class="categoria">${p.category || "Sin categoría"}</p>
+        <p class="precio">$${Number(p.price).toFixed(2)}</p>
         <button class="btn-agregar" data-id="${p.id}">Agregar</button>
       `;
 
@@ -73,7 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     nextBtn.disabled = currentPage === totalPages;
   }
 
-  // 3️⃣ Filtrar productos por categoría
+  // 3️⃣ Función para filtrar productos por categoría
   function filtrarProductos() {
     const cat = categoriaSelect.value;
     currentPage = 1;
@@ -81,16 +85,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (cat === "all") {
       productosFiltrados = [...todosProductos];
     } else {
-      productosFiltrados = todosProductos.filter(p => {
-        const categoria = p.category || p.tipo;
-        return categoria === cat;
-      });
+      productosFiltrados = todosProductos.filter(p => p.category === cat);
     }
 
     mostrarProductos();
   }
 
-  // 4️⃣ Listeners
+  // 4️⃣ Eventos
   categoriaSelect.addEventListener("change", filtrarProductos);
 
   prevBtn.addEventListener("click", () => {
@@ -108,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // ** Listener único **
+  // 5️⃣ Evento agregar al carrito
   contenedor.addEventListener("click", e => {
     if (e.target.classList.contains("btn-agregar")) {
       const id = parseInt(e.target.dataset.id);
@@ -117,44 +118,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 5️⃣ Inicialización
-  productosFiltrados = [...todosProductos];
-  mostrarProductos();
+  // 6️⃣ Inicializar con todos los productos
+  filtrarProductos();
 
-  // 6️⃣ Click en logo
-  document.getElementById("logoBtn").addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
+  // 7️⃣ Volver al inicio al hacer click en el logo
+  const logoBtn = document.getElementById("logoBtn");
+  if (logoBtn) {
+    logoBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
 });
 
-
-// 7️⃣ Función para agregar al carrito (SIN DUPLICADOS)
+// 8️⃣ Función para agregar productos al carrito
 function agregarAlCarrito(producto) {
-  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  const existente = carrito.find(p => p.id === producto.id);
 
-  const productoNormalizado = {
-    id: producto.id,
-    title: producto.title || producto.nombre || "Sin nombre",
-    price: producto.price || producto.precio || 0,
-    thumbnail: producto.thumbnail || producto.imagenPath || "images/placeholder.png",
-    cantidad: 1
-  };
-
-  const index = carrito.findIndex(p => p.id === productoNormalizado.id);
-
-  if (index !== -1) {
-    carrito[index].cantidad++;
+  if (existente) {
+    existente.cantidad += 1;
   } else {
-    carrito.push(productoNormalizado);
+    carrito.push({ ...producto, cantidad: 1 });
   }
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
-
-  Swal.fire({
-    icon: "success",
-    title: "Producto agregado",
-    text: productoNormalizado.title + " fue añadido al carrito",
-    timer: 1200,
-    showConfirmButton: false
-  });
+  alert(`✅ ${producto.title} agregado al carrito.`);
 }
