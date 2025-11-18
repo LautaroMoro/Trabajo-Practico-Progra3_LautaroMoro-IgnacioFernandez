@@ -1,4 +1,3 @@
-// middlewares/error.js
 export function errorHandler(err, req, res, next) {
   // Prisma error básica
   const status = err.status || 500;

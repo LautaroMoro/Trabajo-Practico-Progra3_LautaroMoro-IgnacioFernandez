@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // src/routes/tickets.js
 
+=======
+>>>>>>> Agus-dev
 import { Router } from "express";
 import { body, param, validationResult } from "express-validator";
 import { prisma } from "../db.js";
