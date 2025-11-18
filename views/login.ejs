@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> <%= appName %> - Login</title>
+
+  <link rel="icon" href="../public/favicon.ico">
+  <link rel="stylesheet" href="../public/css/styles.css">
+</head>
+
+<body class="centered">
+
+  <header class="header">
+    <img src="../public/logo.png" alt="logo" class="logo">
+    <h1><%= appName %></h1>
+  </header>
+
+  <% if (error && error.length) { %>
+    <div class="flash flash-error"><%= error %></div>
+  <% } %>
+
+  <% if (success && success.length) { %>
+    <div class="flash flash-success"><%= success %></div>
+  <% } %>
+
+  <main class="card">
+    <form action="/login" method="POST">
+
+      <label>Email</label>
+      <input type="email" name="email" required>
+
+      <label>Contraseña</label>
+      <input type="password" name="password" required>
+
+      <div class="actions">
+        <button type="submit">Ingresar</button>
+        <button type="button" id="quickBtn">Acceso rápido</button>
+      </div>
+
+    </form>
+  </main>
+
+  <script>
+    document.getElementById('quickBtn').addEventListener('click', () => {
+    document.querySelector('input[name=email]').value = "mailPrueba@gmail.com";
+    document.querySelector('input[name=password]').value = "12345";
+    });
+  </script>
+
+</body>
+</html>

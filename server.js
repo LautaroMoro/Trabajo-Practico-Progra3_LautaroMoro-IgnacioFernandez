@@ -13,6 +13,8 @@ import cors from 'cors';
 
 app.use(cors());
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Hacemos la solicitud con un Promise.all y axios para obtener los datos de las tres categorías
 app.get("/api/products", async (req, res) => {
