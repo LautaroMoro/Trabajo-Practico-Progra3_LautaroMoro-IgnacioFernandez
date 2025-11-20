@@ -43,13 +43,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     pageItems.forEach(p => {
       const card = document.createElement("div");
       card.classList.add("producto-card");
+
+      // 🔥 Imagen segura
+      const imagen =
+        p.thumbnail ||
+        (p.images && p.images.length > 0 ? p.images[0] : null) ||
+        "/img/default.png";
+
       card.innerHTML = `
-        <img src="${p.thumbnail || p.images[0]}" alt="${p.title}">
+        <img src="${imagen}" alt="${p.title}">
         <h3>${p.title}</h3>
-        <p class="categoria">${p.category}</p>
-        <p class="precio">$${p.price.toFixed(2)}</p>
+        <p class="categoria">${p.category || "Sin categoría"}</p>
+        <p class="precio">$${Number(p.price).toFixed(2)}</p>
         <button class="btn-agregar" data-id="${p.id}">Agregar</button>
       `;
+
       contenedor.appendChild(card);
     });
 
@@ -90,6 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // 5️⃣ Evento agregar al carrito
   contenedor.addEventListener("click", e => {
     if (e.target.classList.contains("btn-agregar")) {
       const id = parseInt(e.target.dataset.id);
@@ -98,16 +107,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 5️⃣ Inicializar con todos los productos
+  // 6️⃣ Inicializar con todos los productos
   filtrarProductos();
 
-  // 6️⃣ Volver al inicio al hacer click en el logo
-  document.getElementById("logoBtn").addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
+  // 7️⃣ Volver al inicio al hacer click en el logo
+  const logoBtn = document.getElementById("logoBtn");
+  if (logoBtn) {
+    logoBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
 });
 
-// 7️⃣ Función para agregar productos al carrito
+// 8️⃣ Función para agregar productos al carrito
 function agregarAlCarrito(producto) {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
   const existente = carrito.find(p => p.id === producto.id);

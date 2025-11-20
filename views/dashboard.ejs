@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Panel de Administración</h1>
+
+        <form action="/admin/logout" method="POST">
+            <button type="submit" class="btn-logout">Cerrar sesión</button>
+        </form>
+    </header>
+
+    <main class="main-container">
+
+        <% if (typeof error !== "undefined" && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (typeof success !== "undefined" && success) { %>
+            <div class="alert alert-success"><%= success %></div>
+        <% } %>
+
+        <div class="toolbar">
+            <a href="/admin/products/new" class="btn-create">+ Nuevo Producto</a>
+        </div>
+
+        <h2>Productos</h2>
+
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Thumb</th>
+                    <th>Título</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            <% products.forEach(p => { %>
+                <tr>
+                    <td><%= p.id %></td>
+
+                    <td>
+                        <% if (p.thumbnail) { %>
+                            <img src="<%= p.thumbnail %>" 
+                                 alt="thumb" 
+                                 style="width: 50px; height: 50px; object-fit: cover;">
+                        <% } else { %>
+                            —
+                        <% } %>
+                    </td>
+
+                    <td><%= p.title %></td>
+                    <td><%= p.stock %></td>
+                    <td>$ <%= p.price %></td>
+                    <td><%= p.category %></td>
+
+                    <td>
+                        <% if (p.activo) { %>
+                            <span class="badge badge-active">Sí</span>
+                        <% } else { %>
+                            <span class="badge badge-inactive">No</span>
+                        <% } %>
+                    </td>
+
+                    <td class="actions">
+                        <a href="/admin/products/<%= p.id %>/edit" class="btn-edit">Editar</a>
+                        
+                        <form action="/admin/products/<%= p.id %>/toggle" method="POST" style="display:inline;">
+                            <button class="btn-toggle" type="submit">
+                                <%= p.activo ? "Desactivar" : "Activar" %>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+
+        <!-- PAGINACIÓN -->
+        <div class="pagination">
+            <% if (page > 1) { %>
+                <a href="/admin/dashboard?page=<%= page - 1 %>">Anterior</a>
+            <% } %>
+
+            <span>Página <%= page %> de <%= totalPages %></span>
+
+            <% if (page < totalPages) { %>
+                <a href="/admin/dashboard?page=<%= page + 1 %>">Siguiente</a>
+            <% } %>
+        </div>
+
+    </main>
+
+</body>
+</html>
