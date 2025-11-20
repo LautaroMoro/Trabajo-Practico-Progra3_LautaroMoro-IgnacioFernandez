@@ -1,6 +1,6 @@
 # git deja de traquear estas carpetas/archivos
 
-node_modules/
+/node_modules
 
 .env
 
