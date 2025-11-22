@@ -9,8 +9,6 @@ function validate(req, res, next) {
   next();
 }
 
-
-
 export const validarProducto = [
   body("descripcion").isString().isLength({ min: 1, max: 120 }),
   body("precio").isFloat({ gt: 0 }),
@@ -26,4 +24,5 @@ export const validarSync = [
     body.isArray({min: 1}),
     body("*.descripcion").isString(),
     body("*.precio").isFloat({gt: 0}),
-    body("*.activo").optional().isBoolean(), validate];
+    body("*.activo").optional().isBoolean(), validate
+];
