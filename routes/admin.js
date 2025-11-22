@@ -66,15 +66,6 @@ router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
 });
 
 // =============================
-// LOGOUT
-// =============================
-router.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/admin/login');
-  });
-});
-
-// =============================
 // API: CREAR ADMIN (para testers)
 // POST /admin/api/create
 // =============================

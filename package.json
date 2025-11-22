@@ -17,17 +17,18 @@
     "connect-flash": "^0.1.1",
     "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.0",
+    "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "prisma": "^5.19.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.11"
   }
 }

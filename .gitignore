@@ -1,7 +1,6 @@
+node_modules
+.env
+/generated/prisma
 # git deja de traquear estas carpetas/archivos
 
-/node_modules
 
-.env
-
-/generated/prisma

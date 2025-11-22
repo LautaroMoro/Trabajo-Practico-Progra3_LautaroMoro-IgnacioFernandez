@@ -26,4 +26,5 @@ export const validarSync = [
     body.isArray({min: 1}),
     body("*.descripcion").isString(),
     body("*.precio").isFloat({gt: 0}),
-    body("*.activo").optional().isBoolean(), validate];
+    body("*.activo").optional().isBoolean(), validate
+];
