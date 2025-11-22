@@ -9,8 +9,6 @@ function validate(req, res, next) {
   next();
 }
 
-
-
 export const validarProducto = [
   body("descripcion").isString().isLength({ min: 1, max: 120 }),
   body("precio").isFloat({ gt: 0 }),
