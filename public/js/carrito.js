@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (valor >= 6) {
-      Swal.fire("Compra aprobada", "Gracias por tu compra 🛒", "success")
+      Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
         .then(() => (window.location.href = "ticket.html"));
     } else {
       Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
