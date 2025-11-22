@@ -1,4 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  // === BOTÓN DE TEMA (oscuro / claro) ===
+  const temaBtn = document.getElementById("temaBtn");
+
+  const temaGuardado = localStorage.getItem("tema") || "claro";
+  document.body.classList.toggle("oscuro", temaGuardado === "oscuro");
+  if (temaBtn) temaBtn.textContent = temaGuardado === "oscuro" ? "☀️" : "🌙";
+
+  if (temaBtn) {
+    temaBtn.addEventListener("click", () => {
+      const oscuro = document.body.classList.toggle("oscuro");
+      localStorage.setItem("tema", oscuro ? "oscuro" : "claro");
+      temaBtn.textContent = oscuro ? "☀️" : "🌙";
+    });
+  }
+
   // === Recuperar datos del cliente y carrito ===
   const nombre = localStorage.getItem("username") || "Cliente";
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -13,11 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let total = 0;
   carrito.forEach(prod => {
     const li = document.createElement("li");
-    console.log(prod);
-    console.log("entrre");
     lista.appendChild(li);
     total += prod.price * prod.cantidad;
-  li.textContent = `${prod.title} x${prod.cantidad} - ${(prod.price * prod.cantidad).toFixed(2)}`;
+    li.textContent = `${prod.title} x${prod.cantidad} - ${(prod.price * prod.cantidad).toFixed(2)}`;
   });
 
   totalEl.textContent = total.toFixed(2);
@@ -26,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("descargar").addEventListener("click", () => {
     const fechaActual = new Date().toLocaleString();
 
-    // Crear una versión "limpia" del ticket con estilo fijo (blanco y negro)
     const contenidoPDF = `
       <div style="
         font-family: Arial, sans-serif;
@@ -41,24 +54,24 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Fecha:</strong> ${fechaActual}</p>
         <hr style="margin: 10px 0; border: 1px solid #000;">
         <h3 style="margin-bottom: 5px;">Productos:</h3>
+
         <ul style="
           list-style: none;
           padding: 0;
           text-align: left;
           display: inline-block;
-          color: #000000;
         ">
           ${carrito.map(p => `
             <li>${p.title} x${p.cantidad} - $${(p.price * p.cantidad).toFixed(2)}</li>
           `).join('')}
         </ul>
+
         <hr style="margin: 10px 0; border: 1px solid #000;">
-        <h3 style="margin-bottom: 10px;">Total: $${total.toFixed(2)}</h3>
+        <h3>Total: $${total.toFixed(2)}</h3>
         <p style="margin-top: 15px;">¡Gracias por su compra!</p>
       </div>
     `;
 
-    // Configuración de html2pdf
     const opciones = {
       margin: 10,
       filename: "ticket.pdf",
@@ -67,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
-    // Generar PDF desde el contenido limpio
     html2pdf().set(opciones).from(contenidoPDF).save();
   });
 });
