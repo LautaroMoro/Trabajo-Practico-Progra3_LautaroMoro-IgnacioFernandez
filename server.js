@@ -1,4 +1,5 @@
 import express from "express";
+import axios from "axios";
 import session from "express-session";
 import SQLiteStoreFactory from "connect-sqlite3";
 import path from "path";
@@ -86,37 +87,39 @@ app.post(
       return res.redirect("/admin/login");
     }
     const { email, password } = req.body;
-
+    
     try {
       const admin = await prisma.admin.findUnique({ where: { email } });
       if (!admin) {
         req.session.flashError = "Usuario o contraseña inválidos";
         return res.redirect("/admin/login");
       }
-
+      
       const ok = await bcrypt.compare(password, admin.password);
       if (!ok) {
         req.session.flashError = "Usuario o contraseña inválidos";
         return res.redirect("/admin/login");
       }
-
+      
       req.session.adminId = admin.id;
       req.session.flashSuccess = "Bienvenido";
       return res.redirect("/admin/dashboard");
-
+      
     } catch (err) {
       console.error(err);
       req.session.flashError = "Error del servidor";
       return res.redirect("/admin/login");
     }
   }
+  
 );
+console.log(Object.keys(prisma));
 
 app.post("/admin/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/admin/login"));
 });
 
-// ------------- API: crear admin -------------
+// ------------- API: Acceso a modificacion de atributos de esta y creación de admin. -------------
 app.post(
   "/api/admin/create",
   body("email").isEmail(),
@@ -125,7 +128,7 @@ app.post(
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     const { email, password } = req.body;
-
+    
     try {
       const exists = await prisma.admin.findUnique({ where: { email } });
       if (exists) return res.status(409).json({ error: "Admin ya existe" });
@@ -307,7 +310,7 @@ app.post(
   }
 );
 
-// ------------- TOGGLE ACTIVO -------------
+// ------------- TOGGLE ACTIVO(desactivar/activar) -------------
 app.post("/admin/products/:id/toggle", requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -338,30 +341,93 @@ app.post("/admin/products/:id/toggle", requireAdmin, async (req, res) => {
 });
 
 // ------------- API PRODUCTS -------------
+// Ruta encargada de todo lo que tenga que ver con productos (CRUD)
+// 1. Sirve para ver los productos activos(GET). Funciones: Mira la page y limit por si la lista tiene muchas paginas. Cuenta cuantos productos activos hay y trae solo los de esa pagina.
+
 app.get("/api/products", async (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page) || 1);
-  const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 10));
-  const skip = (page - 1) * perPage;
+  // Leer page y limit de los query params, con valores por defecto
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 10));
+    const skip = (page - 1) * perPage;
 
-  const [total, products] = await Promise.all([
-    prisma.product.count({ where: { activo: true } }),
-    prisma.product.findMany({
-      where: { activo: true },
-      skip,
-      take: perPage,
-      orderBy: { id: "asc" },
-    }),
-  ]);
+    // Revisamos si hay productos en la base
+    const total = await prisma.product.count({
+      where: { activo: true }
+    });
 
-  res.json({
-    page,
-    perPage,
-    total,
-    totalPages: Math.ceil(total / perPage),
-    products,
-  });
+    // --- Caso 1: Hay productos en la BDD → devolvemos los paginados ---
+    if (total > 0) {
+      const products = await prisma.product.findMany({
+        where: { activo: true },
+        skip,
+        take: perPage,
+        orderBy: { id: "asc" },
+      });
+
+      return res.json({
+        page,
+        perPage,
+        total,
+        totalPages: Math.ceil(total / perPage),
+        products
+      });
+    }
+
+    // --- Caso 2: NO hay productos en la bdd local → traemos de  la API DummyJSON 
+    // URLS de las categoria de la API DummyJSON
+    const URLS = [
+      "https://dummyjson.com/products/category/mens-shirts",
+      "https://dummyjson.com/products/category/womens-dresses",
+      "https://dummyjson.com/products/category/mens-shoes"
+    ];
+    
+    // Hacemos las solicitudes a las tres URLs en paralelo usando Promise.all y axios
+    // Promise.all documentación: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+    // axios documentación: https://axios-http.com/docs/intro
+    const [remeras, vestidos, zapatillas] = await Promise.all(
+      URLS.map((url) => axios.get(url))
+    );
+    // Combinamos los productos de las tres categorías en un solo array, usando el operador spread(...)
+    const ropaCombinada = [
+      ...remeras.data.products,
+      ...vestidos.data.products,
+      ...zapatillas.data.products
+    ];
+
+  // Guardamos los productos combinados en la base de datos local usando Prisma    
+    await prisma.product.createMany({
+      data: ropaCombinada.map((p) => ({
+        title: p.title,
+        price: p.price,
+        stock: p.stock,
+        category: p.category,
+        description: p.description,
+        thumbnail: p.thumbnail,
+        activo: true
+      }))
+    });
+    // Finalmente, devolvemos la respuesta con los productos combinados
+    return res.json({
+      page: 1,
+      perPage: ropaCombinada.length,
+      total: ropaCombinada.length,
+      totalPages: 1,
+      products: ropaCombinada
+    });
+    // --- Fin Caso 2 ---
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    res.status(500).json({ error: "Error al obtener productos" });
+  }
 });
 
+
+
+
+
+
+// 2. Sirve para ver un producto por su id(GET).
 app.get("/api/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const product = await prisma.product.findUnique({ where: { id } });
@@ -371,6 +437,7 @@ app.get("/api/products/:id", async (req, res) => {
   res.json(product);
 });
 
+// 3. Sirve para crear un producto(POST).
 app.post("/api/products", requireAdmin, upload.single("thumbnail"), async (req, res) => {
   try {
     const { title, description = "", price, stock, category } = req.body;
@@ -395,7 +462,7 @@ app.post("/api/products", requireAdmin, upload.single("thumbnail"), async (req, 
     res.status(500).json({ error: err.message });
   }
 });
-
+// 4. Sirve para actualizar un producto por su id(PUT).
 app.put("/api/products/:id", requireAdmin, upload.single("thumbnail"), async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -421,7 +488,7 @@ app.put("/api/products/:id", requireAdmin, upload.single("thumbnail"), async (re
     res.status(500).json({ error: err.message });
   }
 });
-
+// 5. Sirve para eliminar (desactivar) un producto por su id(DELETE).
 app.delete("/api/products/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
