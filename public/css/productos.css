@@ -339,3 +339,67 @@ body.oscuro .modal-contenido {
   background-color: #222;
   color: #fff;
 }
+
+
+body.claro {
+  background-color: #f7f7f7;
+  color: #111;
+}
+
+body.claro header {
+  background-color: #ffffff;
+  border-bottom: 2px solid #ddd;
+}
+
+body.claro nav a {
+  color: #111;
+}
+
+body.claro nav a:hover {
+  color: #1a73e8;
+}
+
+body.claro .producto-card {
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+body.claro .categoria {
+  color: #666;
+}
+
+body.claro .precio {
+  color: #1a73e8;
+}
+
+body.claro .btn-agregar {
+  background-color: #1a73e8;
+}
+
+body.claro .btn-agregar:hover {
+  background-color: #0d59be;
+}
+
+body.claro footer {
+  background-color: #ffffff;
+  color: #555;
+}
+
+body.claro .menu-button {
+  color: #111 !important;
+  background-color: #e6e6e6 !important;
+}
+
+body.claro .dropdown {
+  background-color: #ffffff !important;
+  border: 1px solid #ccc;
+}
+
+body.claro .dropdown a {
+  color: #111 !important;
+}
+
+body.claro .dropdown a:hover {
+  background-color: #f0f0f0 !important;
+}

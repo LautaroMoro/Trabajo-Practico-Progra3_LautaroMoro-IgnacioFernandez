@@ -10,10 +10,15 @@
 </head>
 
 <body>
+
+  <!-- Botón tema oscuro/claro -->
+  <button id="temaBtn" class="theme-btn">🌙</button>
+
   <header>
     <h1>
       <button id="logoBtn"><img src="nombre.png" alt="Nombre Aplicación"></button>
     </h1>
+
     <div class="menu">
       <button class="menu-button">Categorías</button>
       <select id="categoriaSelect" class="dropdown">
@@ -26,7 +31,6 @@
 
     <nav>
       <a href="carrito.html">Carrito 🛒</a>
-      <button id="adminLoginBtn">Login Admin</button>
     </nav>
   </header>
 
@@ -35,7 +39,6 @@
       <p>Cargando productos...</p>
     </section>
 
-    <!-- Paginación -->
     <div id="pagination" style="text-align:center; margin: 20px;">
       <button id="prevPage">Anterior</button>
       <span id="pageInfo"></span>
@@ -51,6 +54,7 @@
     </p>
   </footer>
 
-  </div>
+  <script src="js/theme.js"></script>
+
 </body>
 </html>

@@ -112,3 +112,27 @@ button:hover {
     .welcome-animation { font-size: 2rem; }
     input[type="text"] { width: 200px; }
 }
+
+/* Modo claro */
+body.claro {
+  background: linear-gradient(135deg, #f6f6f6, #ffffff);
+  color: #111;
+}
+
+body.claro input[type="text"] {
+  background-color: #e8e8e8;
+  color: #000;
+}
+
+body.claro button {
+  background: linear-gradient(90deg, #4da3ff, #1a73e8);
+  color: #fff;
+}
+
+body.claro button:hover {
+  background: linear-gradient(90deg, #3c8fe8, #155ecf);
+}
+
+body.claro #aboutText {
+  color: #444;
+}

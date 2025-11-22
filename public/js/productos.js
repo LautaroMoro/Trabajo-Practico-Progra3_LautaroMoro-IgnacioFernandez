@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const prevBtn = document.getElementById("prevPage");
   const nextBtn = document.getElementById("nextPage");
   const pageInfo = document.getElementById("pageInfo");
+  const temaBtn = document.getElementById("temaBtn");
 
   // Variables
   let todosProductos = [];
@@ -14,7 +15,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 1️⃣ Obtener productos de la API
   try {
     todosProductos = await obtenerProductos();
-    console.log("Productos obtenidos:", todosProductos);
 
     if (todosProductos.length === 0) {
       contenedor.innerHTML = "<p>No se pudieron cargar los productos</p>";
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // 2️⃣ Función para mostrar productos en la página actual
+  // 2️⃣ Mostrar productos
   function mostrarProductos() {
     contenedor.innerHTML = "";
 
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = document.createElement("div");
       card.classList.add("producto-card");
 
-      // 🔥 Imagen segura
       const imagen =
         p.thumbnail ||
         (p.images && p.images.length > 0 ? p.images[0] : null) ||
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     nextBtn.disabled = currentPage === totalPages;
   }
 
-  // 3️⃣ Función para filtrar productos por categoría
+  // 3️⃣ Filtrar productos
   function filtrarProductos() {
     const cat = categoriaSelect.value;
     currentPage = 1;
@@ -98,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 5️⃣ Evento agregar al carrito
+  // 5️⃣ Agregar al carrito
   contenedor.addEventListener("click", e => {
     if (e.target.classList.contains("btn-agregar")) {
       const id = parseInt(e.target.dataset.id);
@@ -107,10 +106,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 6️⃣ Inicializar con todos los productos
+  // 6️⃣ Inicializar filtros
   filtrarProductos();
 
-  // 7️⃣ Volver al inicio al hacer click en el logo
+  // 7️⃣ Volver al inicio
   const logoBtn = document.getElementById("logoBtn");
   if (logoBtn) {
     logoBtn.addEventListener("click", () => {
@@ -119,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// 8️⃣ Función para agregar productos al carrito
+// 8️⃣ Agregar al carrito
 function agregarAlCarrito(producto) {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
   const existente = carrito.find(p => p.id === producto.id);
