@@ -48,7 +48,7 @@ const upload = multer({ storage });
 // ---------------- AUTH ROUTES ----------------
 app.use("/admin", authRouter);
 // ---------------- API ROUTES ----------------(manejo CRUD de productos)
-
+app.use("/", apiRouter);
 
 
 // ---------------- API: CREAR ADMIN ----------------
