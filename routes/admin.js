@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User } = require('../models');
 const auth = require('../middleware/auth');
-
+// CODIGO MUERTO: se reemplaza con routes/auth.js
 // =============================
 // LOGIN VIEW
 // =============================
