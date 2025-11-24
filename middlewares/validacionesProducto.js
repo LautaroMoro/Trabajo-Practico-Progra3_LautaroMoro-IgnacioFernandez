@@ -21,7 +21,7 @@ export const validarId = [param("id").isInt().toInt(), validate];
 
 
 export const validarSync = [
-    body.isArray({min: 1}),
+    body("*.nombre").isArray({min: 1}),
     body("*.descripcion").isString(),
     body("*.precio").isFloat({gt: 0}),
     body("*.activo").optional().isBoolean(), validate
