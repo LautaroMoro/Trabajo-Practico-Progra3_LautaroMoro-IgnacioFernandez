@@ -91,5 +91,3 @@ export async function sincronizarProductos(req, res, next) {
         next(err);
       }
 }
-
-export default router;
