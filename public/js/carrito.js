@@ -42,34 +42,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <button class="btn-eliminar" data-index="${index}">X</button>
       `;
-
+      
       contenedor.appendChild(div);
     });
-
+    
     totalSpan.textContent = total.toFixed(2);
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }
+  
+contenedor.addEventListener("click", async (e) => {
+  const index = parseInt(e.target.dataset.index);
+  const change = parseInt(e.target.dataset.change);
 
-  // === Cambiar cantidad ===
-  contenedor.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-cant")) {
-      const index = parseInt(e.target.dataset.index);
-      const change = parseInt(e.target.dataset.change);
+  // --- MODIFICAR CANTIDAD ---
+  if (e.target.classList.contains("btn-cant")) {
+    carrito[index].cantidad += change;
 
-      carrito[index].cantidad += change;
+    // Si baja a 0, eliminar
+    if (carrito[index].cantidad <= 0) {
+      const id = carrito[index].id;
 
-      if (carrito[index].cantidad <= 0) carrito.splice(index, 1);
+      try {
+        await fetch(`/products/${id}`, { method: "DELETE" });
+      } catch (err) {
+        console.error("Error al eliminar producto", err);
+      }
 
-      actualizarCarrito();
-    }
-
-    // === Eliminar ===
-    if (e.target.classList.contains("btn-eliminar")) {
-      const index = parseInt(e.target.dataset.index);
       carrito.splice(index, 1);
-      actualizarCarrito();
+    } else {
+      // Si sigue existiendo: actualizar en la API
+      try {
+        await fetch(`/products/${carrito[index].id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cantidad: carrito[index].cantidad })
+        });
+      } catch (err) {
+        console.error("Error al actualizar cantidad", err);
+      }
     }
-  });
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    actualizarCarrito();
+  }
+
+  // --- ELIMINAR DIRECTO ---
+  if (e.target.classList.contains("btn-eliminar")) {
+    const id = carrito[index].id;
+
+    try {
+      await fetch(`/products/${id}`, { method: "DELETE" });
+    } catch (err) {
+      console.error("Error al eliminar producto", err);
+    }
+
+    carrito.splice(index, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    actualizarCarrito();
+  }
+});
 
   // === Vaciar carrito ===
   btnVaciar.addEventListener("click", () => {
@@ -128,4 +159,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   actualizarCarrito();
+
 });
