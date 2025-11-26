@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+
     modal.classList.remove("oculto");
     inputNota.value = "";
   });
@@ -132,20 +133,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // CONFIRMAR COMPRA (BACKEND + DESCUENTO STOCK)
   // =========================
   btnConfirmar.addEventListener("click", async () => {
-    const valor = parseInt(inputNota.value);
+  const valor = parseInt(inputNota.value);
 
-    if (isNaN(valor) || valor < 1 || valor > 10) {
-      Swal.fire("Error", "Ingresá un número entre 1 y 10.", "error");
-      return;
-    }
+  if (isNaN(valor) || valor < 1 || valor > 10) {
+    Swal.fire("Error", "Ingresá un número entre 1 y 10.", "error");
+    return;
+  }
 
-    if (valor < 6) {
-      Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
-      return;
-    }
+  if (valor < 6) {
+    Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
+    return;
+  }
 
-    try {
-      const response = await fetch("http://localhost:3000/comprar", {
+  try {
+    const response = await fetch("http://localhost:3000", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -153,33 +154,45 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify({ carrito })
     });
 
+    const data = await response.json();
 
-      const nombre = localStorage.getItem("username") || "Cliente";
-
-const ticket = {
-  cliente: nombre,
-  fecha: new Date().toLocaleString(),
-  productos: carrito,
-  total: carrito.reduce((acc, p) => acc + (p.price * p.cantidad), 0)
-};
-
-// ✅ Guardamos el ticket ANTES de borrar el carrito
-localStorage.setItem("ticket", JSON.stringify(ticket));
-
-Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
-  .then(() => {
-    localStorage.removeItem("carrito");
-    window.location.href = "ticket.html";
-  });
-
-
-    } catch (error) {
-      console.error(error);
-      Swal.fire("Error", error.message, "error");
+    if (!response.ok) {
+      Swal.fire(
+        "Compra rechazada",
+        data.error || "No se pudo realizar la compra.",
+        "error"
+      );
+      return;
     }
 
-    modal.classList.add("oculto");
-  });
+    const nombre = localStorage.getItem("username") || "Cliente";
+
+    const ticket = {
+      cliente: nombre,
+      fecha: new Date().toLocaleString(),
+      productos: carrito,
+      total: carrito.reduce((acc, p) => acc + (p.price * p.cantidad), 0)
+    };
+
+    localStorage.setItem("ticket", JSON.stringify(ticket));
+
+    Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
+      .then(() => {
+        localStorage.removeItem("carrito");
+        window.location.href = "ticket.html";
+      });
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire(
+      "No se realizó la compra",
+      "Error de conexión con el servidor.",
+      "error"
+    );
+  }
+
+  modal.classList.add("oculto");
+});
 
   actualizarCarrito();
 });

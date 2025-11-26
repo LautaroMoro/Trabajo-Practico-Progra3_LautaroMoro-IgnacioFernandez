@@ -11,7 +11,8 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.js";
 import { validarAdmin } from "./middlewares/auth.js";
-import apiRouter from "./routes/products.js";
+import  apiRouter from "./routes/productsRouter.js";
+import  ticketsRouter from "./routes/ticketsRouter.js";
 
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
@@ -48,7 +49,8 @@ const upload = multer({ storage });
 // ---------------- AUTH ROUTES ----------------
 app.use("/admin", authRouter);
 // ---------------- API ROUTES ----------------(manejo CRUD de productos)
-app.use("/", apiRouter);
+app.use("/products", apiRouter);
+app.use("/tickets", ticketsRouter);
 
 
 // ---------------- API: CREAR ADMIN ----------------
@@ -229,7 +231,7 @@ app.get("/api/products", async (req, res) => {
   // Paginación
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
-    const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 15));
+    const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 200));
     const skip = (page - 1) * perPage;
     // Verificamos si hay productos en la base de datos
     const total = await prisma.product.count({ where: { activo: true } });
