@@ -7,17 +7,21 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+
   <header>
+    <button id="themeToggle" class="theme-btn">🌙</button>
     <img src="logo.png" alt="Logo" class="logo">
+
     <h1><button id="logoBtn"><img src="nombre.png"></button></h1>
+
     <nav>
       <button id="finalizarCompra">Finalizar Compra</button>
-      <button id="temaBtn">🌙</button>
     </nav>
   </header>
 
   <main>
     <h2>Productos en tu carrito</h2>
+
     <div id="carrito-container" class="carrito-container">
       <p>Tu carrito está vacío</p>
     </div>
@@ -28,26 +32,22 @@
     </div>
   </main>
 
-  <!-- Ventana flotante (modal) para simular el pago -->
+  <!-- MODAL -->
   <div id="modal-pago" class="modal oculto">
     <div class="modal-contenido">
       <h2>Ingrese nuestra nota</h2>
       <p>Para realizar el pago, ingrese la nota del 1 al 10:</p>
       <input type="number" id="inputNota" min="1" max="10" placeholder="Ej: 8">
+
       <div class="modal-botones">
         <button id="btnCancelar">Cancelar</button>
         <button id="btnConfirmar">Confirmar</button>
       </div>
     </div>
   </div>
-  
-  <!--Boton para cambiar de tema-->>
-  <div class="form-check form-switch text-light">
-    <input class="form-check-input" type="checkbox" id="temaToggle">
-    <label class="form-check-label" for="temaToggle">Modo oscuro</label>
-  </div>
 
-
+  <script src="js/theme.js"></script>
   <script src="js/carrito.js"></script>
+
 </body>
 </html>

@@ -17,6 +17,7 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/tienda?schema=public"
 ├── .env
 ├── prisma
 │   └── schema.prisma
+<<<<<<< HEAD
 └── src
     ├── db.js
     ├── index.js
@@ -25,6 +26,15 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/tienda?schema=public"
     │   └── tickets.js
     └── middlewares
         └── error.js
+=======
+├── db.js
+├── index.js
+├── routes
+│   ├── products.js
+│   └── tickets.js
+└── middlewares
+    └── error.js
+>>>>>>> lautaro-dev
 ```
 // Base de datos simple y portable con SQLite.
 // Si luego quieres Postgres, cambia el provider y DATABASE_URL.

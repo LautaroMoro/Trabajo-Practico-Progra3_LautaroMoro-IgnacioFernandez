@@ -61,3 +61,23 @@ footer {
   color: #888;
   text-align: center;
 }
+
+
+body.claro {
+  background: linear-gradient(135deg, #fafafa, #f0f0f0);
+  color: #111;
+}
+
+body.claro .ticket {
+  background: #ffffff;
+  border: 2px dashed #aaa;
+  box-shadow: 0 0 15px rgba(0,0,0,0.15);
+}
+
+body.claro h1 {
+  color: #1a73e8;
+}
+
+body.claro footer {
+  color: #555;
+}

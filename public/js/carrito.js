@@ -7,47 +7,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancelar = document.getElementById("btnCancelar");
   const btnConfirmar = document.getElementById("btnConfirmar");
   const finalizarBtn = document.getElementById("finalizarCompra");
-  const temaBtn = document.getElementById("temaBtn");
+  const logoBtn = document.getElementById("logoBtn");
 
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  // === Cambio de tema (oscuro / claro) con persistencia ===
-  const temaGuardado = localStorage.getItem("tema") || "claro";
-  document.body.classList.toggle("oscuro", temaGuardado === "oscuro");
-  temaBtn.textContent = temaGuardado === "oscuro" ? "☀️" : "🌙";
+  // =========================
+  // VOLVER A PRODUCTOS
+  // =========================
+  if (logoBtn) {
+    logoBtn.addEventListener("click", () => {
+      window.location.href = "productos.html";
+    });
+  }
 
-  temaBtn.addEventListener("click", () => {
-    const oscuro = document.body.classList.toggle("oscuro");
-    localStorage.setItem("tema", oscuro ? "oscuro" : "claro");
-    temaBtn.textContent = oscuro ? "☀️" : "🌙";
-  });
-
-  // === Actualizar carrito ===
+  // =========================
+  // MOSTRAR CARRITO
+  // =========================
   function actualizarCarrito() {
     contenedor.innerHTML = "";
+
     if (carrito.length === 0) {
       contenedor.innerHTML = "<p>Tu carrito está vacío</p>";
       totalSpan.textContent = "0.00";
+      localStorage.setItem("carrito", JSON.stringify([]));
       return;
     }
 
     let total = 0;
+
     carrito.forEach((item, index) => {
       total += item.price * item.cantidad;
 
       const div = document.createElement("div");
       div.classList.add("item-carrito");
+
       div.innerHTML = `
-        <img src="${item.thumbnail}" alt="${item.title}">
+        <img src="${item.thumbnail}">
         <h3>${item.title}</h3>
+
         <div class="controles">
-          <button onclick="cambiarCantidad(${index}, -1)">-</button>
+          <button class="btn-cant" data-index="${index}" data-change="-1">-</button>
           <span>${item.cantidad}</span>
-          <button onclick="cambiarCantidad(${index}, 1)">+</button>
+          <button class="btn-cant" data-index="${index}" data-change="1">+</button>
         </div>
+
         <p>$${(item.price * item.cantidad).toFixed(2)}</p>
-        <button class="btn-eliminar" onclick="eliminarProducto(${index})">X</button>
+
+        <button class="btn-eliminar" data-index="${index}">X</button>
       `;
+
       contenedor.appendChild(div);
     });
 
@@ -55,20 +63,36 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }
 
-  // === Control de cantidad ===
-  window.cambiarCantidad = (index, cambio) => {
-    carrito[index].cantidad += cambio;
-    if (carrito[index].cantidad <= 0) carrito.splice(index, 1);
-    actualizarCarrito();
-  };
+  // =========================
+  // BOTONES + - y ELIMINAR
+  // =========================
+  contenedor.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-cant")) {
+      const index = parseInt(e.target.dataset.index);
+      const change = parseInt(e.target.dataset.change);
 
-  // === Eliminar producto ===
-  window.eliminarProducto = (index) => {
-    carrito.splice(index, 1);
-    actualizarCarrito();
-  };
+      carrito[index].cantidad += change;
 
-  // === Vaciar carrito ===
+      if (carrito[index].cantidad < 1) {
+        carrito.splice(index, 1);
+      }
+
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      actualizarCarrito();
+    }
+
+    if (e.target.classList.contains("btn-eliminar")) {
+      const index = parseInt(e.target.dataset.index);
+
+      carrito.splice(index, 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      actualizarCarrito();
+    }
+  });
+
+  // =========================
+  // VACIAR CARRITO
+  // =========================
   btnVaciar.addEventListener("click", () => {
     Swal.fire({
       title: "¿Vaciar carrito?",
@@ -80,65 +104,95 @@ document.addEventListener("DOMContentLoaded", () => {
     }).then((result) => {
       if (result.isConfirmed) {
         carrito = [];
+        localStorage.setItem("carrito", JSON.stringify([]));
         actualizarCarrito();
         Swal.fire("Listo", "El carrito fue vaciado.", "success");
       }
     });
   });
 
-  // === Inicializar ===
-  actualizarCarrito();
-
-  // === Logo: volver a productos ===
-  document.getElementById("logoBtn").addEventListener("click", () => {
-    window.location.href = "productos.html";
-  });
-
-  // === Abrir el modal de pago ===
-  finalizarBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
+  // =========================
+  // FINALIZAR COMPRA (ABRE MODAL)
+  // =========================
+  finalizarBtn.addEventListener("click", () => {
     if (carrito.length === 0) {
       Swal.fire("Carrito vacío", "Agregá productos antes de finalizar la compra.", "info");
       return;
     }
 
+
     modal.classList.remove("oculto");
     inputNota.value = "";
-    inputNota.focus();
   });
 
-  // === Cancelar compra ===
   btnCancelar.addEventListener("click", () => {
     modal.classList.add("oculto");
   });
 
-  // === Confirmar pago ===
-  btnConfirmar.addEventListener("click", () => {
-    const valor = parseInt(inputNota.value);
+  // =========================
+  // CONFIRMAR COMPRA (BACKEND + DESCUENTO STOCK)
+  // =========================
+  btnConfirmar.addEventListener("click", async () => {
+  const valor = parseInt(inputNota.value);
 
-    if (isNaN(valor) || valor < 1 || valor > 10) {
-      Swal.fire("Error", "Por favor, ingresá un número válido entre 1 y 10.", "error");
+  if (isNaN(valor) || valor < 1 || valor > 10) {
+    Swal.fire("Error", "Ingresá un número entre 1 y 10.", "error");
+    return;
+  }
+
+  if (valor < 6) {
+    Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ carrito })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      Swal.fire(
+        "Compra rechazada",
+        data.error || "No se pudo realizar la compra.",
+        "error"
+      );
       return;
     }
 
-    if (valor >= 6) {
-      Swal.fire({
-        icon: "success",
-        title: "Compra aprobada 🎉",
-        text: "¡Gracias por su compra!",
-        confirmButtonText: "Ver Ticket",
-      }).then(() => {
-        modal.classList.add("oculto");
+    const nombre = localStorage.getItem("username") || "Cliente";
+
+    const ticket = {
+      cliente: nombre,
+      fecha: new Date().toLocaleString(),
+      productos: carrito,
+      total: carrito.reduce((acc, p) => acc + (p.price * p.cantidad), 0)
+    };
+
+    localStorage.setItem("ticket", JSON.stringify(ticket));
+
+    Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
+      .then(() => {
+        localStorage.removeItem("carrito");
         window.location.href = "ticket.html";
       });
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Fondos insuficientes",
-        text: "No se pudo realizar la compra.",
-      });
-      modal.classList.add("oculto");
-    }
-  });
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire(
+      "No se realizó la compra",
+      "Error de conexión con el servidor.",
+      "error"
+    );
+  }
+
+  modal.classList.add("oculto");
+});
+
+  actualizarCarrito();
 });

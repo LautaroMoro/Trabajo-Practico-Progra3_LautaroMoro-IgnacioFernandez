@@ -1,73 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === Recuperar datos del cliente y carrito ===
-  const nombre = localStorage.getItem("username") || "Cliente";
-  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  // Mostrar datos en pantalla
-  document.getElementById("nombre").textContent = nombre;
-  document.getElementById("fecha").textContent = new Date().toLocaleDateString();
+  // === Recuperar ticket guardado ===
+  const ticket = JSON.parse(localStorage.getItem("ticket"));
+
+  if (!ticket) {
+    alert("No hay datos de compra");
+    window.location.href = "productos.html";
+    return;
+  }
+
+  // === Mostrar datos ===
+  document.getElementById("nombre").textContent = ticket.cliente;
+  document.getElementById("fecha").textContent = ticket.fecha;
 
   const lista = document.getElementById("lista-productos");
   const totalEl = document.getElementById("total");
 
   let total = 0;
-  carrito.forEach(prod => {
+
+  ticket.productos.forEach(prod => {
     const li = document.createElement("li");
-    console.log(prod);
-    console.log("entrre");
+    const subtotal = prod.price * prod.cantidad;
+    total += subtotal;
+    li.textContent = `${prod.title} x${prod.cantidad} - $${subtotal.toFixed(2)}`;
     lista.appendChild(li);
-    total += prod.price * prod.cantidad;
-  li.textContent = `${prod.title} x${prod.cantidad} - ${(prod.price * prod.cantidad).toFixed(2)}`;
   });
 
   totalEl.textContent = total.toFixed(2);
 
-  // === Descargar ticket como PDF limpio ===
+  // === Descargar Ticket en PDF ===
   document.getElementById("descargar").addEventListener("click", () => {
-    const fechaActual = new Date().toLocaleString();
 
-    // Crear una versión "limpia" del ticket con estilo fijo (blanco y negro)
     const contenidoPDF = `
-      <div style="
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 20px;
-        line-height: 1.6;
-        background-color: #ffffff;
-        color: #000000;
-      ">
-        <h2 style="margin-bottom: 10px;">🧾 Comprobante de Compra</h2>
-        <p><strong>Cliente:</strong> ${nombre}</p>
-        <p><strong>Fecha:</strong> ${fechaActual}</p>
-        <hr style="margin: 10px 0; border: 1px solid #000;">
-        <h3 style="margin-bottom: 5px;">Productos:</h3>
-        <ul style="
-          list-style: none;
-          padding: 0;
-          text-align: left;
-          display: inline-block;
-          color: #000000;
-        ">
-          ${carrito.map(p => `
+      <div style="font-family: Arial; text-align: center; padding: 20px;">
+        <h2>🧾 Comprobante de Compra</h2>
+        <p><strong>Cliente:</strong> ${ticket.cliente}</p>
+        <p><strong>Fecha:</strong> ${ticket.fecha}</p>
+        <hr>
+        <h3>Productos</h3>
+        <ul style="list-style:none; padding:0;">
+          ${ticket.productos.map(p => `
             <li>${p.title} x${p.cantidad} - $${(p.price * p.cantidad).toFixed(2)}</li>
-          `).join('')}
+          `).join("")}
         </ul>
-        <hr style="margin: 10px 0; border: 1px solid #000;">
-        <h3 style="margin-bottom: 10px;">Total: $${total.toFixed(2)}</h3>
-        <p style="margin-top: 15px;">¡Gracias por su compra!</p>
+        <hr>
+        <h3>Total: $${ticket.total.toFixed(2)}</h3>
+        <p>¡Gracias por su compra!</p>
       </div>
     `;
 
-    // Configuración de html2pdf
-    const opciones = {
-      margin: 10,
-      filename: "ticket.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-    };
-
-    // Generar PDF desde el contenido limpio
-    html2pdf().set(opciones).from(contenidoPDF).save();
+    html2pdf().from(contenidoPDF).save("ticket.pdf");
   });
+
 });
