@@ -1,5 +1,3 @@
-// public/js/admin.js
-
 document.addEventListener("DOMContentLoaded", () => {
 
     // ======== LOGIN PAGE ======== //

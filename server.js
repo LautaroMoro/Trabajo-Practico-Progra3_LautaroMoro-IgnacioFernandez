@@ -1,7 +1,5 @@
 import express from "express";
 import axios from "axios";
-import session from "express-session";
-import SQLiteStoreFactory from "connect-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
 import bcrypt from "bcrypt";
@@ -10,6 +8,10 @@ import cors from "cors";
 import multer from "multer";
 import { body, validationResult } from "express-validator";
 import fs from "fs";
+import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.js";
+import { validarAdmin } from "./middlewares/auth.js";
+import apiRouter from "./routes/products.js";
 
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
@@ -17,29 +19,19 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SQLiteStore = SQLiteStoreFactory(session);
 
-// ------------- MIDDLEWARES -------------
+// ---------------- MIDDLEWARES GENERALES ----------------
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ------------- SESSIONS -------------
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "dev_secret_change_me",
-    resave: false,
-    saveUninitialized: false,
-    store: new SQLiteStore({ db: "sessions.sqlite", dir: "./" }),
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
-  })
-);
 
-// ------------- MULTER (upload) -------------
+// ---------------- MULTER ----------------
 const uploadDir = path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -48,78 +40,18 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const unique = `${Date.now()}-${Math.round(Math.random()*1e9)}${path.extname(file.originalname)}`;
     cb(null, unique);
-  },
+  }
 });
 const upload = multer({ storage });
 
-// ------------- AUTH MIDDLEWARE -------------
-function requireAdmin(req, res, next) {
-  if (!req.session.adminId) return res.redirect("/admin/login");
-  next();
-}
-function forwardIfLogged(req, res, next) {
-  if (req.session.adminId) return res.redirect("/admin/dashboard");
-  next();
-}
 
-// ------------- LOGIN VIEWS & AUTH -------------
-app.get("/admin/login", forwardIfLogged, (req, res) => {
-  res.render("login", {
-    appName: "Panel Admin",
-    students: "Agustín González",
-    error: req.session.flashError || "",
-    success: req.session.flashSuccess || "",
-  });
+// ---------------- AUTH ROUTES ----------------
+app.use("/admin", authRouter);
+// ---------------- API ROUTES ----------------(manejo CRUD de productos)
+app.use("/", apiRouter);
 
-  req.session.flashError = null;
-  req.session.flashSuccess = null;
-});
 
-// Process login
-app.post(
-  "/admin/login",
-  body("email").isEmail().withMessage("Email inválido"),
-  body("password").notEmpty().withMessage("Ingresar contraseña"),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      req.session.flashError = errors.array().map(e => e.msg).join(" - ");
-      return res.redirect("/admin/login");
-    }
-    const { email, password } = req.body;
-    
-    try {
-      const admin = await prisma.admin.findUnique({ where: { email } });
-      if (!admin) {
-        req.session.flashError = "Usuario o contraseña inválidos";
-        return res.redirect("/admin/login");
-      }
-      
-      const ok = await bcrypt.compare(password, admin.password);
-      if (!ok) {
-        req.session.flashError = "Usuario o contraseña inválidos";
-        return res.redirect("/admin/login");
-      }
-      
-      req.session.adminId = admin.id;
-      req.session.flashSuccess = "Bienvenido";
-      return res.redirect("/admin/dashboard");
-      
-    } catch (err) {
-      console.error(err);
-      req.session.flashError = "Error del servidor";
-      return res.redirect("/admin/login");
-    }
-  }
-  
-);
-console.log(Object.keys(prisma));
-
-app.post("/admin/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/admin/login"));
-});
-
-// ------------- API: Acceso a modificacion de atributos de esta y creación de admin. -------------
+// ---------------- API: CREAR ADMIN ----------------
 app.post(
   "/api/admin/create",
   body("email").isEmail(),
@@ -127,8 +59,9 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { email, password } = req.body;
-    
+
     try {
       const exists = await prisma.admin.findUnique({ where: { email } });
       if (exists) return res.status(409).json({ error: "Admin ya existe" });
@@ -148,75 +81,34 @@ app.post(
   }
 );
 
-// ------------- DASHBOARD (CORREGIDO) -------------
-app.get("/admin/dashboard", requireAdmin, async (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page) || 1);
-  const perPage = 8;
-  const skip = (page - 1) * perPage;
 
-  const [total, products] = await Promise.all([
-    prisma.product.count(),
-    prisma.product.findMany({
-      orderBy: { id: "asc" },
-      skip,
-      take: perPage,
-    }),
-  ]);
-
-  const totalPages = Math.ceil(total / perPage);
-
-  const byCategory = products.reduce((acc, p) => {
-    acc[p.category] = acc[p.category] || [];
-    acc[p.category].push(p);
-    return acc;
-  }, {});
-
-  // ✅ FLASH VARIABLES AQUÍ (corrección)
-  const flashError = req.session.flashError || "";
-  const flashSuccess = req.session.flashSuccess || "";
-
-  req.session.flashError = null;
-  req.session.flashSuccess = null;
-
-  res.render("dashboard", {
-    appName: "Panel Admin",
-    students: "Agustín González",
-    products,
-    byCategory,
-    page,
-    totalPages,
-    flashError,
-    flashSuccess,
-    adminId: req.session.adminId,
-  });
-});
-
-// ------------- VISTA ALTA PRODUCTO -------------
-app.get("/admin/products/new", requireAdmin, (req, res) => {
+// ---------------- PRODUCT VIEWS (SIN SESIONES) ----------------
+// Alta producto
+app.get("/admin/products/new", validarAdmin, (req, res) => {
   res.render("product-form", {
     appName: "Panel Admin",
-    students: "Agustín González",
     product: null,
     action: "/admin/products",
     method: "POST",
+    error: req.query.error,
+    success: req.query.success
   });
 });
 
-// ------------- CREAR PRODUCTO -------------
+// Crear producto
 app.post(
   "/admin/products",
-  requireAdmin,
+  validarAdmin,
   upload.single("thumbnail"),
-  body("title").notEmpty().withMessage("Title requerido"),
-  body("price").isFloat({ gt: 0 }).withMessage("Price debe ser mayor a 0"),
-  body("stock").isInt({ min: 0 }).withMessage("Stock inválido"),
-  body("category").notEmpty().withMessage("Category requerido"),
+  body("title").notEmpty(),
+  body("price").isFloat({ gt: 0 }),
+  body("stock").isInt({ min: 0 }),
+  body("category").notEmpty(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
-      req.session.flashError = errors.array().map(e => e.msg).join(" - ");
-      return res.redirect("/admin/products/new");
+      const msg = errors.array().map(e => e.msg).join(" - ");
+      return res.redirect("/admin/products/new?error=" + msg);
     }
 
     try {
@@ -235,40 +127,41 @@ app.post(
         },
       });
 
-      req.session.flashSuccess = "Producto creado";
-      return res.redirect("/admin/dashboard");
-
+      return res.redirect("/admin/dashboard?success=Producto+creado");
     } catch (err) {
       console.error(err);
-      req.session.flashError = "Error al crear producto";
-      return res.redirect("/admin/products/new");
+      return res.redirect("/admin/products/new?error=Error+al+crear");
     }
   }
 );
 
-// ------------- EDITAR PRODUCTO VIEW -------------
-app.get("/admin/products/:id/edit", requireAdmin, async (req, res) => {
-  const id = parseInt(req.params.id);
-  const product = await prisma.product.findUnique({ where: { id } });
 
-  if (!product) {
-    req.session.flashError = "Producto no encontrado";
-    return res.redirect("/admin/dashboard");
-  }
+// Editar producto VIEW
+app.get("/admin/products/:id/edit",
+  validarAdmin, 
+  async (req, res) => {
+    const id = parseInt(req.params.id);
+    const product = await prisma.product.findUnique({ where: { id } });
 
-  res.render("product-form", {
-    appName: "Panel Admin",
-    students: "Agustín González",
-    product,
-    action: `/admin/products/${id}`,
-    method: "POST",
-  });
+    if (!product) {
+      return res.redirect("/admin/dashboard?error=Producto+no+encontrado");
+    }
+
+    res.render("product-form", {
+      appName: "Panel Admin",
+      product,
+      action: `/admin/products/${id}`,
+      method: "POST",
+      error: req.query.error,
+      success: req.query.success
+    });
 });
 
-// ------------- EDITAR PRODUCTO (POST) -------------
+
+// Editar producto POST
 app.post(
   "/admin/products/:id",
-  requireAdmin,
+  validarAdmin,
   upload.single("thumbnail"),
   body("title").notEmpty(),
   body("price").isFloat({ gt: 0 }),
@@ -279,8 +172,8 @@ app.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      req.session.flashError = errors.array().map(e => e.msg).join(" - ");
-      return res.redirect(`/admin/products/${id}/edit`);
+      const msg = errors.array().map(e => e.msg).join(" - ");
+      return res.redirect(`/admin/products/${id}/edit?error=${msg}`);
     }
 
     try {
@@ -292,77 +185,61 @@ app.post(
         price: parseFloat(price),
         stock: parseInt(stock),
         category,
-        activo: activo === "on" ? true : true,
+        activo: activo === "on"
       };
 
       if (req.file) data.thumbnail = `/uploads/${req.file.filename}`;
 
       await prisma.product.update({ where: { id }, data });
 
-      req.session.flashSuccess = "Producto modificado";
-      return res.redirect("/admin/dashboard");
+      return res.redirect("/admin/dashboard?success=Producto+modificado");
 
     } catch (err) {
       console.error(err);
-      req.session.flashError = "Error al editar producto";
-      return res.redirect(`/admin/products/${id}/edit`);
+      return res.redirect(`/admin/products/${id}/edit?error=Error+al+editar`);
     }
   }
 );
 
-// ------------- TOGGLE ACTIVO(desactivar/activar) -------------
-app.post("/admin/products/:id/toggle", requireAdmin, async (req, res) => {
+
+// Toggle activo
+app.post("/admin/products/:id/toggle", validarAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
     const product = await prisma.product.findUnique({ where: { id } });
-
-    if (!product) {
-      req.session.flashError = "Producto no encontrado";
-      return res.redirect("/admin/dashboard");
-    }
+    if (!product) return res.redirect("/admin/dashboard?error=Producto+no+encontrado");
 
     await prisma.product.update({
       where: { id },
       data: { activo: !product.activo }
     });
 
-    req.session.flashSuccess = product.activo
-      ? "Producto desactivado"
-      : "Producto activado";
-
-    return res.redirect("/admin/dashboard");
+    return res.redirect("/admin/dashboard?success=Estado+actualizado");
 
   } catch (err) {
     console.error(err);
-    req.session.flashError = "Error al cambiar estado";
-    return res.redirect("/admin/dashboard");
+    return res.redirect("/admin/dashboard?error=Error+de+toggle");
   }
 });
 
-// ------------- API PRODUCTS -------------
-// Ruta encargada de todo lo que tenga que ver con productos (CRUD)
-// 1. Sirve para ver los productos activos(GET). Funciones: Mira la page y limit por si la lista tiene muchas paginas. Cuenta cuantos productos activos hay y trae solo los de esa pagina.
 
+// ---------------- API PRODUCTS ----------------
 app.get("/api/products", async (req, res) => {
-  // Leer page y limit de los query params, con valores por defecto
+  // Paginación
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
-    const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 10));
+    const perPage = Math.max(1, Math.min(50, parseInt(req.query.limit) || 15));
     const skip = (page - 1) * perPage;
-
-    // Revisamos si hay productos en la base
-    const total = await prisma.product.count({
-      where: { activo: true }
-    });
-
-    // --- Caso 1: Hay productos en la BDD → devolvemos los paginados ---
+    // Verificamos si hay productos en la base de datos
+    const total = await prisma.product.count({ where: { activo: true } });
+    // <----------CASO 1: PRODUCTOS EN BDD LOCAL ---------->
     if (total > 0) {
       const products = await prisma.product.findMany({
         where: { activo: true },
         skip,
         take: perPage,
-        orderBy: { id: "asc" },
+        orderBy: { id: "asc" }
       });
 
       return res.json({
@@ -374,28 +251,27 @@ app.get("/api/products", async (req, res) => {
       });
     }
 
-    // --- Caso 2: NO hay productos en la bdd local → traemos de  la API DummyJSON 
-    // URLS de las categoria de la API DummyJSON
+    // <----------CASO 2: NO HAY PRODUCTOS EN BDD LOCAL -> TRAEMOS DE API EXTERNA ---------->
+    // Definimos las URLs de las categorías a obtener
+    // Documentacion axios: https://axios-http.com/docs/intro
+
     const URLS = [
       "https://dummyjson.com/products/category/mens-shirts",
       "https://dummyjson.com/products/category/womens-dresses",
       "https://dummyjson.com/products/category/mens-shoes"
     ];
-    
-    // Hacemos las solicitudes a las tres URLs en paralelo usando Promise.all y axios
-    // Promise.all documentación: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
-    // axios documentación: https://axios-http.com/docs/intro
+    // Hacemos las peticiones en paralelo usando Promise.all para mayor eficiencia
     const [remeras, vestidos, zapatillas] = await Promise.all(
-      URLS.map((url) => axios.get(url))
-    );
-    // Combinamos los productos de las tres categorías en un solo array, usando el operador spread(...)
+      URLS.map((url) => axios.get(url)));
+    // Combinamos los productos en un solo array usando spread operator
+    // documentacion: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+
     const ropaCombinada = [
       ...remeras.data.products,
       ...vestidos.data.products,
       ...zapatillas.data.products
     ];
-
-  // Guardamos los productos combinados en la base de datos local usando Prisma    
+    // Guardamos los productos en la base de datos
     await prisma.product.createMany({
       data: ropaCombinada.map((p) => ({
         title: p.title,
@@ -407,7 +283,8 @@ app.get("/api/products", async (req, res) => {
         activo: true
       }))
     });
-    // Finalmente, devolvemos la respuesta con los productos combinados
+
+    // Devolvemos los productos combinados como respuesta
     return res.json({
       page: 1,
       perPage: ropaCombinada.length,
@@ -415,7 +292,7 @@ app.get("/api/products", async (req, res) => {
       totalPages: 1,
       products: ropaCombinada
     });
-    // --- Fin Caso 2 ---
+    // Fin de la lógica de si no hay productos
   } catch (error) {
     console.error("Error al obtener productos:", error);
     res.status(500).json({ error: "Error al obtener productos" });
@@ -423,11 +300,7 @@ app.get("/api/products", async (req, res) => {
 });
 
 
-
-
-
-
-// 2. Sirve para ver un producto por su id(GET).
+// GET product by id
 app.get("/api/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const product = await prisma.product.findUnique({ where: { id } });
@@ -437,33 +310,38 @@ app.get("/api/products/:id", async (req, res) => {
   res.json(product);
 });
 
-// 3. Sirve para crear un producto(POST).
-app.post("/api/products", requireAdmin, upload.single("thumbnail"), async (req, res) => {
-  try {
-    const { title, description = "", price, stock, category } = req.body;
-    const thumbnail = req.file ? `/uploads/${req.file.filename}` : "";
 
-    const product = await prisma.product.create({
-      data: {
-        title,
-        description,
-        price: parseFloat(price),
-        stock: parseInt(stock),
-        category,
-        thumbnail,
-        activo: true,
-      },
-    });
+// Crear product API
+app.post("/api/products", validarAdmin,
+  upload.single("thumbnail"),
+  async (req, res) => {
+    try {
+      const { title, description = "", price, stock, category } = req.body;
+      const thumbnail = req.file ? `/uploads/${req.file.filename}` : "";
 
-    res.status(201).json(product);
+      const product = await prisma.product.create({
+        data: {
+          title,
+          description,
+          price: parseFloat(price),
+          stock: parseInt(stock),
+          category,
+          thumbnail,
+          activo: true,
+        },
+      });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+      res.status(201).json(product);
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
 });
-// 4. Sirve para actualizar un producto por su id(PUT).
-app.put("/api/products/:id", requireAdmin, upload.single("thumbnail"), async (req, res) => {
+
+
+// Actualizar producto
+app.put("/api/products/:id", validarAdmin, upload.single("thumbnail"), async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { title, description, price, stock, category, activo } = req.body;
@@ -488,8 +366,10 @@ app.put("/api/products/:id", requireAdmin, upload.single("thumbnail"), async (re
     res.status(500).json({ error: err.message });
   }
 });
-// 5. Sirve para eliminar (desactivar) un producto por su id(DELETE).
-app.delete("/api/products/:id", requireAdmin, async (req, res) => {
+
+
+// Eliminar producto (soft delete)
+app.delete("/api/products/:id", validarAdmin, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     await prisma.product.update({ where: { id }, data: { activo: false } });
@@ -502,13 +382,51 @@ app.delete("/api/products/:id", requireAdmin, async (req, res) => {
   }
 });
 
+
 // ROOT ROUTE
 app.get("/", (req, res) => {
-  if (req.session.adminId) return res.redirect("/admin/dashboard");
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// ---------------- COMPRA: DESCUENTO DE STOCK ----------------
+app.post("/comprar", async (req, res) => {
+  try {
+    const { carrito } = req.body;
+
+    if (!carrito || carrito.length === 0) {
+      return res.status(400).json({ error: "Carrito vacío" });
+    }
+
+    for (const item of carrito) {
+      const producto = await prisma.product.findUnique({
+        where: { id: item.id }
+      });
+
+      if (!producto) {
+        return res.status(404).json({
+          error: `Producto no encontrado: ${item.title}`
+        });
+      }
+
+      if (producto.stock < item.cantidad) {
+        return res.status(400).json({
+          error: `Stock insuficiente para ${producto.title}`
+        });
+      }
+
+      await prisma.product.update({
+        where: { id: item.id },
+        data: { stock: producto.stock - item.cantidad }
+      });
+    }
+
+    return res.json({ ok: true });
+
+  } catch (error) {
+    console.error("ERROR COMPRA:", error);
+    return res.status(500).json({ error: "Error al procesar compra" });
+  }
+});
+
 // START SERVER
-app.listen(PORT, () =>
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

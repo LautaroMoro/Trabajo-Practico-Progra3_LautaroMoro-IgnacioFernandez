@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User } = require('../models');
 const auth = require('../middleware/auth');
-
+// CODIGO MUERTO: se reemplaza con routes/auth.js
 // =============================
 // LOGIN VIEW
 // =============================
@@ -62,15 +62,6 @@ router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
   res.render('dashboard', { 
     appName: 'AutoServicio - Admin',
     user: req.session.user
-  });
-});
-
-// =============================
-// LOGOUT
-// =============================
-router.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/admin/login');
   });
 });
 

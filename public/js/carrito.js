@@ -7,16 +7,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancelar = document.getElementById("btnCancelar");
   const btnConfirmar = document.getElementById("btnConfirmar");
   const finalizarBtn = document.getElementById("finalizarCompra");
+  const logoBtn = document.getElementById("logoBtn");
 
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-  // === Mostrar productos ===
+  // =========================
+  // VOLVER A PRODUCTOS
+  // =========================
+  if (logoBtn) {
+    logoBtn.addEventListener("click", () => {
+      window.location.href = "productos.html";
+    });
+  }
+
+  // =========================
+  // MOSTRAR CARRITO
+  // =========================
   function actualizarCarrito() {
     contenedor.innerHTML = "";
 
     if (carrito.length === 0) {
       contenedor.innerHTML = "<p>Tu carrito está vacío</p>";
       totalSpan.textContent = "0.00";
+      localStorage.setItem("carrito", JSON.stringify([]));
       return;
     }
 
@@ -29,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       div.classList.add("item-carrito");
 
       div.innerHTML = `
-        <img src="${item.thumbnail}" alt="${item.title}">
+        <img src="${item.thumbnail}">
         <h3>${item.title}</h3>
 
         <div class="controles">
@@ -50,7 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }
 
-  // === Cambiar cantidad ===
+  // =========================
+  // BOTONES + - y ELIMINAR
+  // =========================
   contenedor.addEventListener("click", (e) => {
     if (e.target.classList.contains("btn-cant")) {
       const index = parseInt(e.target.dataset.index);
@@ -58,20 +73,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       carrito[index].cantidad += change;
 
-      if (carrito[index].cantidad <= 0) carrito.splice(index, 1);
+      if (carrito[index].cantidad < 1) {
+        carrito.splice(index, 1);
+      }
 
+      localStorage.setItem("carrito", JSON.stringify(carrito));
       actualizarCarrito();
     }
 
-    // === Eliminar ===
     if (e.target.classList.contains("btn-eliminar")) {
       const index = parseInt(e.target.dataset.index);
+
       carrito.splice(index, 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
       actualizarCarrito();
     }
   });
 
-  // === Vaciar carrito ===
+  // =========================
+  // VACIAR CARRITO
+  // =========================
   btnVaciar.addEventListener("click", () => {
     Swal.fire({
       title: "¿Vaciar carrito?",
@@ -83,18 +104,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }).then((result) => {
       if (result.isConfirmed) {
         carrito = [];
+        localStorage.setItem("carrito", JSON.stringify([]));
         actualizarCarrito();
         Swal.fire("Listo", "El carrito fue vaciado.", "success");
       }
     });
   });
 
-  // === Ir a productos ===
-  document.getElementById("logoBtn").addEventListener("click", () => {
-    window.location.href = "productos.html";
-  });
-
-  // === Finalizar compra ===
+  // =========================
+  // FINALIZAR COMPRA (ABRE MODAL)
+  // =========================
   finalizarBtn.addEventListener("click", () => {
     if (carrito.length === 0) {
       Swal.fire("Carrito vacío", "Agregá productos antes de finalizar la compra.", "info");
@@ -109,7 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("oculto");
   });
 
-  btnConfirmar.addEventListener("click", () => {
+  // =========================
+  // CONFIRMAR COMPRA (BACKEND + DESCUENTO STOCK)
+  // =========================
+  btnConfirmar.addEventListener("click", async () => {
     const valor = parseInt(inputNota.value);
 
     if (isNaN(valor) || valor < 1 || valor > 10) {
@@ -117,11 +139,43 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (valor >= 6) {
-      Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
-        .then(() => (window.location.href = "ticket.html"));
-    } else {
+    if (valor < 6) {
       Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/comprar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ carrito })
+    });
+
+
+      const nombre = localStorage.getItem("username") || "Cliente";
+
+const ticket = {
+  cliente: nombre,
+  fecha: new Date().toLocaleString(),
+  productos: carrito,
+  total: carrito.reduce((acc, p) => acc + (p.price * p.cantidad), 0)
+};
+
+// ✅ Guardamos el ticket ANTES de borrar el carrito
+localStorage.setItem("ticket", JSON.stringify(ticket));
+
+Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
+  .then(() => {
+    localStorage.removeItem("carrito");
+    window.location.href = "ticket.html";
+  });
+
+
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", error.message, "error");
     }
 
     modal.classList.add("oculto");
