@@ -43,6 +43,7 @@ export async function actualizarProducto(req, res, next) {
       if (req.body.descripcion !== undefined) data.descripcion = req.body.descripcion;
       if (req.body.precio !== undefined) data.precio = req.body.precio;
       if (req.body.activo !== undefined) data.activo = req.body.activo;
+      if(req.body.cantidad !== undefined) data.cantidad = req.body.cantidad;
 
       const updated = await prisma.product.update({ where: { id: Number(id) }, data });
       res.json(updated);

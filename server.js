@@ -11,7 +11,8 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.js";
 import { validarAdmin } from "./middlewares/auth.js";
-import apiRouter from "./routes/products.js";
+import productsRouter from "./routes/productsRouter.js";
+import ticketsRouter from "./routes/ticketsRouter.js";
 
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
@@ -48,7 +49,8 @@ const upload = multer({ storage });
 // ---------------- AUTH ROUTES ----------------
 app.use("/admin", authRouter);
 // ---------------- API ROUTES ----------------(manejo CRUD de productos)
-app.use("/", apiRouter);
+app.use("/products", productsRouter);
+app.use("/tickets", ticketsRouter);
 
 
 // ---------------- API: CREAR ADMIN ----------------

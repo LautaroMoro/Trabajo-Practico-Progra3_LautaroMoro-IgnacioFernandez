@@ -83,3 +83,33 @@ document.addEventListener("DOMContentLoaded", () => {
     html2pdf().set(opciones).from(contenidoPDF).save();
   });
 });
+
+
+// === agarra el carrito y lo envia como ticket ===                //
+async function enviarTicket() {
+  const nombreCliente = localStorage.getItem("username") || "Cliente";
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  const items = carrito.map(item => ({
+    productId: item.id,
+    cantidad: item.cantidad
+  }));
+
+  try {
+    const res = await fetch("/tickets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombreCliente, items })
+    });
+
+    if (!res.ok) throw new Error("Error al enviar ticket");
+
+    const ticket = await res.json();
+    alert("Compra realizada con éxito");
+    localStorage.removeItem("carrito");
+    location.reload();
+  } catch (err) {
+    console.error("Error al crear ticket:", err);
+    alert("Hubo un problema al procesar el ticket");
+  }
+}

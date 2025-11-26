@@ -13,16 +13,16 @@ export const validarProducto = [
   body("descripcion").isString().isLength({ min: 1, max: 120 }),
   body("precio").isFloat({ gt: 0 }),
   body("activo").optional().isBoolean(),
-  validate
+  validate()
 ];
 
 
-export const validarId = [param("id").isInt().toInt(), validate];
+export const validarId = [param("id").isInt().toInt(), validate()];
 
 
 export const validarSync = [
-    body("*.nombre").isArray({min: 1}),
+    body("*").isArray({min: 1}),
     body("*.descripcion").isString(),
     body("*.precio").isFloat({gt: 0}),
-    body("*.activo").optional().isBoolean(), validate
+    body("*.activo").optional().isBoolean(), validate()
 ];
