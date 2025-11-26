@@ -4,10 +4,14 @@ import * as productsController from "../controllers/productsController.js";
 
 const router = Router();
 
-router.post("/products", validarProducto, productsController.crearProducto());
-router.get("/products", productsController.listarProductos());
-router.put("/products:id", validarId, validarProducto, productsController.actualizarProducto());
-router.delete("/products:id", validarId, validarProducto, productsController.eliminarProducto());
+// CRUD
+router.post("/", validarProducto, productsController.crearProducto());
+router.get("/", productsController.listarProductos());
+router.put("/:id", validarId, validarProducto, productsController.actualizarProducto());
+router.delete("/:id", validarId, validarProducto, productsController.eliminarProducto());
 router.post("/sync", validarSync, productsController.sincronizarProductos());
+
+// ✅ COMPRA Y DESCUENTO DE STOCK
+router.post("/comprar", productsController.procesarCompra());
 
 export default router;

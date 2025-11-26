@@ -11,8 +11,7 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.js";
 import { validarAdmin } from "./middlewares/auth.js";
-import productsRouter from "./routes/productsRouter.js";
-import ticketsRouter from "./routes/ticketsRouter.js";
+import apiRouter from "./routes/products.js";
 
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
@@ -49,8 +48,7 @@ const upload = multer({ storage });
 // ---------------- AUTH ROUTES ----------------
 app.use("/admin", authRouter);
 // ---------------- API ROUTES ----------------(manejo CRUD de productos)
-app.use("/products", productsRouter);
-app.use("/tickets", ticketsRouter);
+app.use("/", apiRouter);
 
 
 // ---------------- API: CREAR ADMIN ----------------
@@ -388,6 +386,46 @@ app.delete("/api/products/:id", validarAdmin, async (req, res) => {
 // ROOT ROUTE
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ---------------- COMPRA: DESCUENTO DE STOCK ----------------
+app.post("/comprar", async (req, res) => {
+  try {
+    const { carrito } = req.body;
+
+    if (!carrito || carrito.length === 0) {
+      return res.status(400).json({ error: "Carrito vacío" });
+    }
+
+    for (const item of carrito) {
+      const producto = await prisma.product.findUnique({
+        where: { id: item.id }
+      });
+
+      if (!producto) {
+        return res.status(404).json({
+          error: `Producto no encontrado: ${item.title}`
+        });
+      }
+
+      if (producto.stock < item.cantidad) {
+        return res.status(400).json({
+          error: `Stock insuficiente para ${producto.title}`
+        });
+      }
+
+      await prisma.product.update({
+        where: { id: item.id },
+        data: { stock: producto.stock - item.cantidad }
+      });
+    }
+
+    return res.json({ ok: true });
+
+  } catch (error) {
+    console.error("ERROR COMPRA:", error);
+    return res.status(500).json({ error: "Error al procesar compra" });
+  }
 });
 
 // START SERVER
