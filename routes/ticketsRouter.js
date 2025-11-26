@@ -1,7 +1,9 @@
-//routes/tickets.js
+// src/routes/tickets.js
+
 import { Router } from "express";
-import { validarTicket, validarId } from "../middlewares/validacionesTickets.js";
-import * as ticketsController from "../controllers/ticketsController.js";
+import { body, param, validationResult } from "express-validator";
+import ticketsController from "../controllers/ticketsController.js";
+import  { validarTicket, validarId }  from "../middlewares/validacionesTickets.js";
 
 const router = Router();
 
@@ -13,7 +15,6 @@ router.get("/tickets", validarTicket , ticketsController.consultarTickets());
 
 // Consultar ticket por ID
 router.get("/tickets:id", validarTicket, validarId, ticketsController.consultarTickets());
-
 
 
 export default router;
