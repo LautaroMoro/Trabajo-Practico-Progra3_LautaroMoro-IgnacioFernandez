@@ -1,8 +1,8 @@
-import validate from "./validacionesProducto.js";
 import {param, body, query} from "express-validator";
+import validate from "./validacionesProducto.js";
 
 
-export const validarId = [param("id").isInt().toInt(), validate()];
+export const validarId = [param("id").isInt().toInt(), validate];
 
 
 export const validarTicket = [
@@ -10,5 +10,5 @@ export const validarTicket = [
     body("items").isArray({ min: 1 }),
     body("items.*.productId").isInt(),
     body("items.*.cantidad").isInt({ min: 1 }),
-    validate()
+    validate
 ];
