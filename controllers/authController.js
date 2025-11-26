@@ -33,9 +33,6 @@ export async function loguearUsuario(req, res, next) {
       });
 
       return res.redirect("/admin/dashboard");
-
-
-
     } catch (err) {
     next(err);
     }
