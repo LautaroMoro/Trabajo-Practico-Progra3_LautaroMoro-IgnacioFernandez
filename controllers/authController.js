@@ -5,19 +5,6 @@ import { prisma } from "../db.js";
 export async function loguearUsuario(req, res, next) {
   try {
     const { email, password } = req.body;
-<<<<<<< HEAD
-    const user = await prisma.admin.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(401).json({ message: "Credenciales inválidas" });
-    }
-        const passwordValid = await bcrypt.compare(password, user.password);
-    } catch (err) {
-    next(err);
-    }    
-=======
-    if (!email || !password) {
-      return res.render("login", {error: "Por favor, complete todos los campos.", success: ""});
-    }
     const user = await prisma.admin.findUnique({ where: { email } });
     if (!user) {
       return res.render("login", {error: "Credenciales inválidas.", success: ""});
@@ -53,21 +40,10 @@ export async function loguearUsuario(req, res, next) {
     next(err);
     }
 
->>>>>>> lautaro-dev
     
 }
 
 export async function logOutUsuario(req, res, next) {
-<<<<<<< HEAD
-  try {
-  req.session.destroy(() => {
-    res.redirect('/admin/login');
-  });
-} catch (err) {
-  next(err);
-}
-=======
   res.clearCookie("jwt");
   return res.redirect("/admin/login?success=Sesión+cerrada+correctamente");
->>>>>>> lautaro-dev
 }
