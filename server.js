@@ -390,15 +390,18 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ---------------- COMPRA: DESCUENTO DE STOCK ----------------
+// ---------------- COMPRA: DESCUENTO DE STOCK (AHORA CREA TICKET EN DB) ----------------
 app.post("/comprar", async (req, res) => {
   try {
-    const { carrito } = req.body;
+    console.log("BODY RECIBIDO:", req.body); // 👈 DEBUG
 
-    if (!carrito || carrito.length === 0) {
-      return res.status(400).json({ error: "Carrito vacío" });
+    const { carrito, nombreCliente } = req.body;
+
+    if (!Array.isArray(carrito) || carrito.length === 0) {
+      return res.status(400).json({ error: "Carrito vacío o inválido" });
     }
 
+    // 1. Validar stock
     for (const item of carrito) {
       const producto = await prisma.product.findUnique({
         where: { id: item.id }
@@ -406,7 +409,7 @@ app.post("/comprar", async (req, res) => {
 
       if (!producto) {
         return res.status(404).json({
-          error: `Producto no encontrado: ${item.title}`
+          error: `Producto no encontrado: ${item.id}`
         });
       }
 
@@ -415,6 +418,39 @@ app.post("/comprar", async (req, res) => {
           error: `Stock insuficiente para ${producto.title}`
         });
       }
+    }
+
+    // 2. Calcular total
+    const total = carrito.reduce(
+      (acc, item) => acc + item.price * item.cantidad,
+      0
+    );
+
+    // 3. Crear ticket
+    const ticket = await prisma.ticket.create({
+      data: {
+        nombreCliente: nombreCliente || "Consumidor Final",
+        importe: total
+      }
+    });
+
+    // 4. Crear ítems del ticket + descontar stock
+    for (const item of carrito) {
+      const subtotal = item.price * item.cantidad;
+
+      await prisma.ticketItem.create({
+        data: {
+          ticketId: ticket.id,
+          productId: item.id,
+          cantidad: item.cantidad,
+          precioUnitario: item.price,
+          subtotal
+        }
+      });
+
+      const producto = await prisma.product.findUnique({
+        where: { id: item.id }
+      });
 
       await prisma.product.update({
         where: { id: item.id },
@@ -422,7 +458,10 @@ app.post("/comprar", async (req, res) => {
       });
     }
 
-    return res.json({ ok: true });
+    return res.json({
+      ok: true,
+      ticketId: ticket.id
+    });
 
   } catch (error) {
     console.error("ERROR COMPRA:", error);

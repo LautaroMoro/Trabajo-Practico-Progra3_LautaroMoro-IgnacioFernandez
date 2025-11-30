@@ -37,16 +37,16 @@ model TicketItem {
   precioUnitario Float
   subtotal       Float
 
-  ticket  Ticket  @relation(fields: [ticketId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  ticket  Ticket  @relation(fields: [ticketId], references: [id]) // relaciona el recibo con la venta
+  product Product @relation(fields: [productId], references: [id]) // relaciona el recibo con el producto
 
-  @@index([ticketId])
-  @@index([productId])
+  @@index([ticketId]) // cursor/references para mejorar las consultas  
+  @@index([productId]) // cursor/references para mejorar las consultas
 }
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
+  email     String   @unique // hace que no se pueda permitir el registro de este campo 2 veces
   password  String   // hashed con bcrypt
   createdAt DateTime @default(now())
 }

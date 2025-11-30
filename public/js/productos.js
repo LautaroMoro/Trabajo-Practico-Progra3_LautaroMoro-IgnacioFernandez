@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     pageInfo.innerText = `Página ${currentPage} de ${totalPages}`;
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
+    prevBtn.disabled = currentPage === 1; //Preguntar
+    nextBtn.disabled = currentPage === totalPages; // Preguntar
   }
 
   // 3️⃣ Filtrar productos
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentPage = 1;
 
     if (cat === "all") {
-      productosFiltrados = [...todosProductos];
+      productosFiltrados = [...todosProductos]; // Preguntarr
     } else {
       productosFiltrados = todosProductos.filter(p => p.category === cat);
     }

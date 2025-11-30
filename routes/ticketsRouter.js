@@ -16,5 +16,8 @@ router.get("/tickets", validarTicket , ticketsController.consultarTickets);
 // Consultar ticket por ID
 router.get("/tickets:id", validarTicket, validarId, ticketsController.consultarTickets);
 
+router.post("/comprar", ticketsController.crearTicket);
+
+router.get("/:id", ticketsController.consultarTickets);
 
 export default router;

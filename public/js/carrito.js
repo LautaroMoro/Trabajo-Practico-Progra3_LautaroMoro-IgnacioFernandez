@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-
     modal.classList.remove("oculto");
     inputNota.value = "";
   });
@@ -130,69 +129,78 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // CONFIRMAR COMPRA (BACKEND + DESCUENTO STOCK)
+  // CONFIRMAR COMPRA (BACKEND + DESCUENTO STOCK + TICKET)
   // =========================
   btnConfirmar.addEventListener("click", async () => {
-  const valor = parseInt(inputNota.value);
+    const valor = parseInt(inputNota.value);
 
-  if (isNaN(valor) || valor < 1 || valor > 10) {
-    Swal.fire("Error", "Ingresá un número entre 1 y 10.", "error");
-    return;
-  }
-
-  if (valor < 6) {
-    Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:3000/comprar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ carrito })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      Swal.fire(
-        "Compra rechazada",
-        data.error || "No se pudo realizar la compra.",
-        "error"
-      );
+    if (isNaN(valor) || valor < 1 || valor > 10) {
+      Swal.fire("Error", "Ingresá un número entre 1 y 10.", "error");
       return;
     }
 
-    const nombre = localStorage.getItem("username") || "Cliente";
+    if (valor < 6) {
+      Swal.fire("Fondos insuficientes", "No se pudo realizar la compra.", "error");
+      return;
+    }
 
-    const ticket = {
-      cliente: nombre,
-      fecha: new Date().toLocaleString(),
-      productos: carrito,
-      total: carrito.reduce((acc, p) => acc + (p.price * p.cantidad), 0)
-    };
+    try {
+      const nombre = localStorage.getItem("username") || "Cliente";
 
-    localStorage.setItem("ticket", JSON.stringify(ticket));
+      const total = carrito.reduce(
+        (acc, p) => acc + p.price * p.cantidad,
+        0
+      );
 
-    Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
-      .then(() => {
-        localStorage.removeItem("carrito");
-        window.location.href = "ticket.html";
+      const response = await fetch("http://localhost:3000/comprar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          carrito,
+          nombreCliente: nombre,
+          importe: total
+        })
       });
 
-  } catch (error) {
-    console.error(error);
-    Swal.fire(
-      "No se realizó la compra",
-      "Error de conexión con el servidor.",
-      "error"
-    );
-  }
+      const data = await response.json();
 
-  modal.classList.add("oculto");
-});
+      if (!response.ok) {
+        Swal.fire(
+          "Compra rechazada",
+          data.error || "No se pudo realizar la compra.",
+          "error"
+        );
+        return;
+      }
+
+      const ticket = {
+        cliente: nombre,
+        fecha: new Date().toLocaleString(),
+        productos: carrito,
+        total: total
+      };
+
+      localStorage.setItem("ticket", JSON.stringify(ticket));
+
+      Swal.fire("Compra aprobada", "COMPRASTE UN BUEN PAPOI 🛒", "success")
+        .then(() => {
+          localStorage.removeItem("carrito");
+          window.location.href = "ticket.html";
+        });
+
+    } catch (error) {
+      console.error(error);
+      Swal.fire(
+        "No se realizó la compra",
+        "Error de conexión con el servidor.",
+        "error"
+      );
+    }
+
+    modal.classList.add("oculto");
+  });
 
   actualizarCarrito();
 });
