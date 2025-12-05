@@ -1,0 +1,29 @@
+# Notas de diseño
+- **Tablas separadas**: `Product`, `Ticket`, `TicketItem` (la tabla "del stock" que vincula ticket↔producto con `cantidad` y `precioUnitario`).
+- **Importe del ticket** se calcula desde los ítems y se guarda congelado.
+- **Compatibilidad con productos desde API**: endpoint `/products/sync` hace **upsert** por `id` si viene, o crea si no.
+- **Borrado lógico** de productos vía `activo=false` para no romper tickets históricos.
+- **Validaciones** con `express-validator`.
+- **SQLite** para desarrollo. Pasa a Postgres cambiando `datasource` y `DATABASE_URL`.
+```
+// Ejemplo SQLite en .env
+DATABASE_URL="postgresql://user:pass@localhost:5432/tienda?schema=public"
+
+# Estructura de archivos
+
+```
+.
+├── package.json
+├── .env
+├── prisma
+│   └── schema.prisma
+├── db.js
+├── index.js
+├── routes
+│   ├── products.js
+│   └── tickets.js
+└── middlewares
+    └── error.js
+```
+// Base de datos simple y portable con SQLite.
+// Si luego quieres Postgres, cambia el provider y DATABASE_URL.

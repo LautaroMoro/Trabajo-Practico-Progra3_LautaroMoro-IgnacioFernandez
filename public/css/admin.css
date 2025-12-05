@@ -1,0 +1,252 @@
+/* ======================================= */
+/*              ESTILO GENERAL             */
+/* ======================================= */
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #121212;
+  color: #fff;
+}
+
+/* ======================================= */
+/*                 HEADER                  */
+/* ======================================= */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1f1f1f;
+  border-bottom: 2px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.logo {
+  height: 70px;
+}
+
+/* NAV */
+nav a,
+nav button {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 1rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+nav a:hover,
+nav button:hover {
+  color: #00bcd4;
+}
+
+/* ======================================= */
+/*             CONTENEDOR MAIN             */
+/* ======================================= */
+
+main {
+  padding: 2rem;
+}
+
+/* ======================================= */
+/*    TARJETAS ESTILO PANEL ADMIN          */
+/* ======================================= */
+
+.admin-card {
+  background-color: #1e1e1e;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.admin-card h2 {
+  margin-top: 0;
+  color: #00bcd4;
+}
+
+/* ======================================= */
+/*                TABLAS                   */
+/* ======================================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table thead {
+  background-color: #00bcd4;
+  color: #000;
+}
+
+table th, table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+table tr:hover {
+  background-color: #2a2a2a;
+}
+
+/* ======================================= */
+/*                BOTONES                  */
+/* ======================================= */
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-primary {
+  background-color: #00bcd4;
+  color: #000;
+}
+
+.btn-primary:hover {
+  background-color: #0097a7;
+}
+
+.btn-danger {
+  background-color: #e53935;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #c62828;
+}
+
+.btn-warning {
+  background-color: #ffb300;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #ffa000;
+}
+
+/* ======================================= */
+/*               FORMULARIOS               */
+/* ======================================= */
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #00bcd4;
+}
+
+/* ======================================= */
+/*                 ALERTAS                 */
+/* ======================================= */
+
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.alert-success {
+  background-color: #2e7d32;
+}
+
+.alert-danger {
+  background-color: #c62828;
+}
+
+.alert-warning {
+  background-color: #ff8f00;
+}
+
+/* ======================================= */
+/*                 FOOTER                  */
+/* ======================================= */
+
+footer {
+  margin-top: 3rem;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  text-align: center;
+  border-top: 2px solid #333;
+  color: #999;
+}
+
+footer a {
+  color: #bbb;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/*             RESPONSIVE ADMIN            */
+/* ======================================= */
+
+@media (max-width: 768px) {
+
+  header {
+    flex-direction: column;
+    gap: 0.6rem;
+    text-align: center;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  nav a, nav button {
+    margin: 0.5rem;
+  }
+
+  table th, table td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-card {
+    padding: 1rem;
+  }
+
+  table {
+    font-size: 0.8rem;
+  }
+}

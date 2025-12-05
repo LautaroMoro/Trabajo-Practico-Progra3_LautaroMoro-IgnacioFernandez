@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String       
+  price       Float
+  stock       Int
+  activo      Boolean       @default(true)
+  category    String
+  thumbnail   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  items       TicketItem[]
+}
+
+model Ticket {
+  id             Int          @id @default(autoincrement())
+  nombreCliente  String
+  importe        Float
+  fecha          DateTime      @default(now())
+  items          TicketItem[]
+}
+
+model TicketItem {
+  id             Int      @id @default(autoincrement())
+  ticketId       Int
+  productId      Int
+  cantidad       Int
+  precioUnitario Float
+  subtotal       Float
+
+  ticket  Ticket  @relation(fields: [ticketId], references: [id]) // relaciona el recibo con la venta
+  product Product @relation(fields: [productId], references: [id]) // relaciona el recibo con el producto
+
+  @@index([ticketId]) // cursor/references para mejorar las consultas  
+  @@index([productId]) // cursor/references para mejorar las consultas
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique // hace que no se pueda permitir el registro de este campo 2 veces
+  password  String   // hashed con bcrypt
+  createdAt DateTime @default(now())
+}

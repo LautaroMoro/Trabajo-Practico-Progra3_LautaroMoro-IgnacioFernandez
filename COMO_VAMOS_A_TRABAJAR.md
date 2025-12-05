@@ -89,7 +89,7 @@ git commit -m "feat: agrego componente de navbar responsive"
 git push
 ```
 
-> 💡 Usá commits descriptivos (ver más abajo en la sección *Convenciones de commits*).
+💡 Usá commits descriptivos (ver más abajo en la sección *Convenciones de commits*).
 
 ### 🔸 3. Subir tus avances a `dev`
 Cuando completes una funcionalidad o tarea:
@@ -119,7 +119,7 @@ Así todos mantienen su código sincronizado con el trabajo del resto.
 
 Cuando todo esté funcionando correctamente:
 ```bash
-git checkout main
+git checkout/ switch main
 git pull
 git merge dev
 git push
@@ -138,30 +138,10 @@ De esta manera, `main` siempre refleja una versión **estable y lista para deplo
 5. **Resolver conflictos solo en tu propia rama.**
 6. **Usar mensajes de commit claros y consistentes.**
 
----
-
-## 🧾 Convenciones de commits
-
-Usaremos la convención **[Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)**:
-
-| Tipo | Uso |
-|------|------|
-| `feat:` | Nueva funcionalidad |
-| `fix:` | Corrección de errores |
-| `style:` | Cambios visuales o de formato |
-| `refactor:` | Mejora del código sin cambiar funcionalidad |
-| `docs:` | Actualización de documentación |
-| `chore:` | Cambios menores o de mantenimiento |
-
-**Ejemplo:**
-```bash
-git commit -m "feat: agrego componente de formulario de registro"
-git commit -m "fix: corrijo error en validación de email"
-```
 
 ---
 
-## 🧠 Organización en GitHub( A considerar)
+## 🧠 Organización en GitHub()
 
 - Usaremos **Issues** para registrar tareas y bugs.  
 - Usaremos **Projects** para gestionar el flujo de trabajo (To Do, In Progress, Done).  
@@ -178,4 +158,4 @@ git commit -m "fix: corrijo error en validación de email"
 ---
 
 ✍️ **Equipo de desarrollo - TP Web**  
-> Agustin • Ignacio • Lautaro
+Agustin • Ignacio • Lautaro
